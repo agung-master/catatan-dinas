@@ -1,0 +1,2928 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#030712">
+<title>Laporan Perjalanan Dinas</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+/* ============================================================
+   DESIGN SYSTEM — NEON GLASS CONTROL ROOM
+   ============================================================ */
+:root{
+  --bg-deep:#030712;
+  --bg-elevated:#0a0f1c;
+  --glass-fill:rgba(255,255,255,0.045);
+  --glass-fill-hover:rgba(255,255,255,0.075);
+  --glass-border:rgba(255,255,255,0.10);
+  --glass-border-strong:rgba(255,255,255,0.18);
+  --neon-cyan:#22d3ee;
+  --neon-cyan-soft:rgba(34,211,238,0.14);
+  --neon-cyan-glow:rgba(34,211,238,0.35);
+  --neon-purple:#a78bfa;
+  --neon-purple-soft:rgba(167,139,250,0.14);
+  --neon-pink:#f472b6;
+  --neon-emerald:#34d399;
+  --neon-amber:#fbbf24;
+  --text-primary:#f1f5f9;
+  --text-secondary:#cbd5e1;
+  --text-muted:#94a3b8;
+  --text-faint:#64748b;
+  --primary:#22d3ee;
+  --primary-l:#67e8f9;
+  --primary-xl:rgba(34,211,238,0.14);
+  --success:#34d399;
+  --danger:#f87171;
+  --warning:#fbbf24;
+  --bg:#030712;
+  --card:rgba(255,255,255,0.045);
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --border:rgba(255,255,255,0.10);
+  --shadow-sm:0 4px 16px rgba(0,0,0,0.35);
+  --shadow:0 8px 32px rgba(0,0,0,0.45);
+  --shadow-lg:0 20px 50px rgba(0,0,0,0.55);
+  --shadow-glow:0 0 24px rgba(34,211,238,0.25);
+  --radius:16px;
+  --radius-sm:8px;
+  --radius-lg:24px;
+}
+body.light-mode{
+  --bg-deep:#eef2f8;--bg-elevated:#ffffff;
+  --glass-fill:rgba(255,255,255,0.62);--glass-fill-hover:rgba(255,255,255,0.85);
+  --glass-border:rgba(15,23,42,0.08);--glass-border-strong:rgba(15,23,42,0.14);
+  --text-primary:#0f172a;--text-secondary:#1e293b;--text-muted:#64748b;--text-faint:#94a3b8;
+  --primary:#0891b2;--primary-l:#06b6d4;--primary-xl:rgba(8,145,178,0.12);
+  --bg:#eef2f8;--card:rgba(255,255,255,0.75);--text:#0f172a;--muted:#64748b;--border:rgba(15,23,42,0.08);
+  --shadow-sm:0 4px 16px rgba(15,23,42,0.06);--shadow:0 8px 32px rgba(15,23,42,0.08);
+  --shadow-lg:0 20px 50px rgba(15,23,42,0.12);--shadow-glow:0 0 24px rgba(8,145,178,0.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif;
+  background-color:var(--bg-deep);color:var(--text-primary);
+  font-size:15px;line-height:1.5;padding-bottom:120px;overflow-x:hidden;position:relative;
+  transition:background 0.35s ease, color 0.35s ease;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(34,211,238,0.13), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 90%, rgba(167,139,250,0.10), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 55%, rgba(244,114,182,0.05), transparent 60%);
+  background-attachment:fixed;animation:meshDrift 30s ease-in-out infinite alternate;
+}
+body.light-mode::before{
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(8,145,178,0.14), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 90%, rgba(139,92,246,0.10), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 55%, rgba(244,114,182,0.06), transparent 60%);
+}
+@keyframes meshDrift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-1.5%,1%) scale(1.04)}100%{transform:translate(1%,-1%) scale(1)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.96);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes slideIn{from{transform:translateX(-12px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastIn{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes slideUpModal{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes neonPulse{0%,100%{opacity:.35}50%{opacity:.75}}
+@keyframes scanline{0%{top:0}100%{top:100%}}
+@keyframes progressPulse{0%{width:0}50%{width:70%}100%{width:95%}}
+.glass-panel{
+  background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border:1px solid var(--glass-border);border-radius:var(--radius);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+#progressBar{
+  position:fixed;top:0;left:0;height:3px;width:0;
+  background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple));
+  z-index:9999;transition:width .3s ease;box-shadow:0 0 12px var(--neon-cyan-glow);
+}
+#progressBar.active{animation:progressPulse 1.2s infinite}
+.skeleton{background:rgba(255,255,255,0.06);animation:neonPulse 2s ease-in-out infinite;border-radius:12px}
+body.light-mode .skeleton{background:rgba(15,23,42,0.06)}
+.skeleton-card{height:84px;margin-bottom:12px}
+.skeleton-text{height:20px;margin-bottom:8px;width:60%}
+.skeleton-title{height:28px;margin-bottom:16px;width:40%}
+.app-header{
+  background:rgba(3,7,18,0.72);backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
+  border-bottom:1px solid var(--glass-border);color:var(--text-primary);
+  padding:12px 0;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.35);
+}
+body.light-mode .app-header{background:rgba(255,255,255,0.72);box-shadow:0 4px 24px rgba(15,23,42,0.06)}
+.header-content{display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding:0 16px;gap:10px}
+.header-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.header-left > div{min-width:0;overflow:hidden}
+.logo-icon{
+  font-size:20px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--neon-cyan-soft),var(--neon-purple-soft));
+  border:1px solid var(--glass-border);border-radius:10px;
+  filter:drop-shadow(0 0 6px var(--neon-cyan-glow));flex-shrink:0;
+}
+.app-header h1{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.5px;color:var(--text-primary);font-family:'JetBrains Mono','Courier New',monospace}
+.subtitle{font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--neon-cyan);font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:0.5px;text-shadow:0 0 8px var(--neon-cyan-glow)}
+.header-actions{display:flex;gap:4px;align-items:center;flex-shrink:0}
+.btn-header{background:var(--glass-fill);color:var(--text-secondary);border:1px solid var(--glass-border);width:34px;height:34px;border-radius:8px;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;justify-content:center}
+.btn-header:hover{background:var(--neon-cyan-soft);color:var(--neon-cyan);border-color:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow);transform:translateY(-1px)}
+.btn-header:active{transform:scale(0.94)}
+.btn-header.logout{color:var(--neon-pink)}
+.btn-header.logout:hover{background:rgba(244,114,182,0.14);color:var(--neon-pink);border-color:var(--neon-pink);box-shadow:0 0 16px rgba(244,114,182,0.35)}
+#loginView{position:fixed;inset:0;background:#030712;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:20px;overflow:hidden}
+#loginView::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(34,211,238,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,0.06) 1px, transparent 1px);
+  background-size:40px 40px;opacity:0.5;
+  mask-image:radial-gradient(ellipse at center, #000 30%, transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse at center, #000 30%, transparent 80%);
+}
+#loginView::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 40% at 25% 20%, rgba(34,211,238,0.15), transparent 60%),radial-gradient(ellipse 50% 40% at 75% 80%, rgba(167,139,250,0.12), transparent 60%);pointer-events:none}
+.login-card{
+  background:rgba(10,15,28,0.72);backdrop-filter:blur(24px) saturate(140%);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  padding:32px 24px;border-radius:var(--radius-lg);
+  box-shadow:0 20px 60px rgba(0,0,0,0.55),0 0 40px rgba(34,211,238,0.12),inset 0 1px 0 rgba(255,255,255,0.08);
+  border:1px solid var(--glass-border);border-top:2px solid var(--neon-cyan);
+  width:100%;max-width:380px;text-align:center;animation:pop 0.45s cubic-bezier(0.16,1,0.3,1);
+  z-index:10;position:relative;overflow:hidden;
+}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg, transparent, var(--neon-cyan), transparent);animation:scanline 3.5s linear infinite;opacity:0.6}
+.matrix-title{font-size:20px;margin-bottom:6px;color:#fff;text-transform:uppercase;letter-spacing:3px;text-shadow:0 0 20px rgba(34,211,238,0.7);font-weight:800}
+.matrix-subtitle{font-size:10px;color:var(--neon-cyan);margin-bottom:26px;letter-spacing:2px;font-family:'JetBrains Mono','Courier New',monospace;text-transform:uppercase}
+.login-card .field{text-align:left;margin-bottom:16px}
+.login-card label{color:var(--neon-cyan);font-size:10px;font-weight:700;letter-spacing:1.5px;display:block;margin-bottom:6px;text-transform:uppercase;font-family:'JetBrains Mono','Courier New',monospace}
+.login-card input{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;color:#fff;font-family:'JetBrains Mono','Courier New',monospace;font-size:16px;transition:all 0.25s ease;outline:none}
+.login-card input:focus{background:rgba(34,211,238,0.08);border-color:var(--neon-cyan);box-shadow:0 0 20px rgba(34,211,238,0.28)}
+.login-card input::placeholder{color:rgba(255,255,255,0.18)}
+.login-card input:-webkit-autofill,
+.login-card input:-webkit-autofill:hover,
+.login-card input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 40px #0a0f1c inset !important;-webkit-text-fill-color:#fff !important}
+.matrix-btn{width:100%;margin-top:12px;padding:14px;background:linear-gradient(135deg, var(--neon-cyan) 0%, #818cf8 55%, var(--neon-purple) 100%);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer;transition:all 0.25s ease;text-transform:uppercase;box-shadow:0 6px 24px rgba(34,211,238,0.4)}
+.matrix-btn:hover{box-shadow:0 8px 32px rgba(34,211,238,0.6);transform:translateY(-1px)}
+.matrix-btn:active{transform:translateY(1px) scale(0.99)}
+.matrix-btn:disabled{opacity:0.7;cursor:not-allowed}
+.matrix-footer{margin-top:22px;font-size:10px;color:var(--text-faint);letter-spacing:1.5px;font-family:'JetBrains Mono','Courier New',monospace;line-height:1.8}
+.matrix-footer strong{color:var(--neon-cyan)}
+.view{padding:20px 16px;max-width:1100px;margin:0 auto;width:100%}
+.view.hidden{display:none}
+.dash-filter{display:flex;gap:10px;margin-bottom:16px;animation:fadeUp 0.35s ease}
+.dash-filter select{flex:1;padding:11px 12px;border:1px solid var(--glass-border);border-radius:10px;font-size:13px;font-weight:600;background:var(--glass-fill);backdrop-filter:blur(10px);color:var(--text-primary);outline:none;transition:all 0.2s ease;cursor:pointer}
+.dash-filter select:focus{border-color:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow)}
+.dash-filter select option{background:var(--bg-elevated);color:var(--text-primary)}
+.dash-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;animation:fadeUp 0.4s ease}
+.summary-card{
+  background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  padding:16px;border-radius:var(--radius);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);
+  border:1px solid var(--glass-border);display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+.summary-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.summary-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:linear-gradient(180deg, var(--neon-cyan), var(--neon-purple));box-shadow:0 0 12px var(--neon-cyan-glow)}
+.summary-card.green::before{background:linear-gradient(180deg, var(--neon-emerald), var(--neon-cyan));box-shadow:0 0 12px rgba(52,211,153,0.4)}
+.summary-card span{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-family:'JetBrains Mono','Courier New',monospace}
+.summary-card strong{font-size:18px;font-weight:800;color:var(--text-primary);word-break:break-word;letter-spacing:-0.5px}
+.summary-card.green strong{color:var(--neon-emerald)}
+.charts-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:20px;animation:fadeUp 0.45s ease}
+.charts-grid .chart-card{margin-bottom:0}
+@media(min-width:900px){.charts-grid{grid-template-columns:1fr 1fr}}
+.chart-card{background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);margin-bottom:20px;border:1px solid var(--glass-border);overflow:hidden}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.chart-header h3{font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono','Courier New',monospace}
+.chart-container{position:relative;height:220px;width:100%;display:flex;justify-content:center}
+.trip-dropdown-card{background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);margin-bottom:20px;border:1px solid var(--glass-border);border-left:3px solid var(--neon-cyan);animation:fadeUp 0.5s ease}
+.trip-dropdown-card label{display:block;font-size:10px;font-weight:700;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono','Courier New',monospace}
+.trip-dropdown-wrapper{display:flex;gap:10px;align-items:center}
+.trip-dropdown-wrapper select{flex:1;padding:12px 36px 12px 14px;border:1px solid var(--glass-border);border-radius:10px;font-size:13px;font-weight:600;color:var(--neon-cyan);background:rgba(34,211,238,0.05);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2322d3ee%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");background-repeat:no-repeat;background-position:right 12px top 50%;background-size:10px auto;transition:all 0.2s ease}
+.trip-dropdown-wrapper select:focus{border-color:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow);background-color:rgba(34,211,238,0.08)}
+.trip-dropdown-wrapper select option{background:var(--bg-elevated);color:var(--text-primary)}
+.section-title{font-size:12px;font-weight:700;margin-bottom:14px;color:var(--text-secondary);display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono','Courier New',monospace}
+.section-title::before{content:'';width:3px;height:14px;background:linear-gradient(180deg, var(--neon-cyan), var(--neon-purple));border-radius:2px;box-shadow:0 0 8px var(--neon-cyan-glow)}
+.recent-list{background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-radius:var(--radius);box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);border:1px solid var(--glass-border);overflow:hidden}
+.recent-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--glass-border);transition:background 0.2s ease}
+.recent-item:last-child{border-bottom:none}
+.recent-item:hover{background:var(--glass-fill-hover)}
+.recent-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0;font-size:14px;border:1px solid var(--glass-border)}
+.recent-info{flex:1;min-width:0}
+.recent-title{font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-sub{font-size:11px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-amount{font-size:13px;font-weight:700;color:var(--neon-emerald);text-align:right;font-family:'JetBrains Mono','Courier New',monospace;white-space:nowrap}
+.recent-date{font-size:10px;color:var(--text-faint);text-align:right;margin-top:2px;font-family:'JetBrains Mono','Courier New',monospace;white-space:nowrap}
+.trip-detail-header{background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);padding:20px;border-radius:var(--radius);box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);margin-bottom:18px;border:1px solid var(--glass-border);border-left:3px solid var(--neon-cyan);animation:fadeUp 0.3s ease}
+.trip-detail-title{font-size:18px;font-weight:800;margin-bottom:4px;color:var(--text-primary);letter-spacing:-0.3px}
+.trip-detail-sub{font-size:12px;color:var(--neon-cyan);margin-bottom:14px;font-weight:600}
+.btn-back{background:var(--glass-fill);color:var(--text-secondary);border:1px solid var(--glass-border);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;backdrop-filter:blur(10px)}
+.btn-back:hover{background:var(--neon-cyan-soft);color:var(--neon-cyan);border-color:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow)}
+
+/* PERBAIKAN GRID MENU */
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+@media(min-width:550px){ .menu-grid{grid-template-columns:repeat(3,1fr)} }
+@media(min-width:769px){ .menu-grid{grid-template-columns:repeat(5,1fr)} }
+
+.menu-item{background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-radius:var(--radius);padding:16px 12px;text-align:center;box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.06);cursor:pointer;transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;border:1px solid var(--glass-border);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100px}
+.menu-item:hover{transform:translateY(-3px);box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.10), 0 0 24px var(--neon-cyan-glow);border-color:var(--neon-cyan)}
+.menu-item:active{transform:scale(0.97)}
+.menu-icon{width:40px;height:40px;margin-bottom:10px;color:var(--neon-cyan);background:var(--neon-cyan-soft);border-radius:8px;padding:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(34,211,238,0.2);transition:all 0.2s ease}
+.menu-item:hover .menu-icon{background:var(--neon-cyan);color:#fff;box-shadow:0 0 20px var(--neon-cyan-glow)}
+.menu-item h3{font-size:12px;color:var(--text-secondary);font-weight:600;line-height:1.3;letter-spacing:0.3px}
+
+/* Menu Lebar (LPJ & Rekap) */
+.menu-item.rekap,.menu-item.lpj{flex-direction:row;gap:12px;padding:16px;min-height:auto;text-align:left;justify-content:flex-start;width:100%}
+@media(min-width:769px){
+  .menu-item.rekap{grid-column:span 2}
+  .menu-item.lpj{grid-column:span 3}
+}
+.menu-item.rekap{background:linear-gradient(135deg, rgba(34,211,238,0.10), rgba(167,139,250,0.10));border:1px solid rgba(34,211,238,0.3)}
+.menu-item.rekap .menu-icon{margin-bottom:0;background:rgba(34,211,238,0.18);color:var(--neon-cyan)}
+.menu-item.rekap h3{color:var(--neon-cyan);font-size:13px;font-weight:700}
+.menu-item.lpj{background:linear-gradient(135deg, rgba(52,211,153,0.10), rgba(34,211,238,0.08));border:1px solid rgba(52,211,153,0.3)}
+.menu-item.lpj .menu-icon{margin-bottom:0;background:rgba(52,211,153,0.18);color:var(--neon-emerald);border-color:rgba(52,211,153,0.3)}
+.menu-item.lpj h3{color:var(--neon-emerald);font-size:13px;font-weight:700}
+.menu-item.lpj:hover{box-shadow:var(--shadow), 0 0 24px rgba(52,211,153,0.35);border-color:var(--neon-emerald)}
+
+/* PERBAIKAN LPJ ROWS (Mencegah tabrakan teks) */
+.lpj-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed var(--glass-border); font-size: 13px; flex-wrap: wrap; gap: 4px; }
+.lpj-row span:first-child { color: var(--text-muted); flex: 1; padding-right: 10px; }
+.lpj-row strong { font-family: 'JetBrains Mono', monospace; text-align: right; margin-left: auto; white-space: nowrap; }
+.lpj-total { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 10px 12px; border-radius: 8px; flex-wrap: wrap; gap: 4px;}
+.lpj-input-group { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 8px; padding: 4px 0; }
+.lpj-input-group span { font-size: 13px; font-weight: 600; color: var(--text-primary); flex: 1; }
+.lpj-input-group input { width: 140px; padding: 10px 12px; border: 1px solid var(--glass-border); border-radius: 8px; text-align: right; font-weight: bold; font-size: 14px; background: rgba(255,255,255,0.05); color: var(--neon-cyan); font-family: 'JetBrains Mono', monospace; outline: none; }
+
+.table-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.search-input{padding:10px 14px;border:1px solid var(--glass-border);border-radius:10px;font-size:13px;background:var(--glass-fill);backdrop-filter:blur(10px);color:var(--text-primary);outline:none;flex:1;max-width:320px;transition:all 0.2s ease;width: 100%;}
+.search-input::placeholder{color:var(--text-faint)}
+.search-input:focus{border-color:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow);background:var(--glass-fill-hover)}
+.data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-radius:var(--radius);border:1px solid var(--glass-border);overflow:hidden;box-shadow:var(--shadow)}
+.data-table thead th{background:rgba(255,255,255,0.035);padding:12px 14px;text-align:left;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;font-family:'JetBrains Mono','Courier New',monospace;border-bottom:1px solid var(--glass-border)}
+.data-table tbody tr{transition:background 0.15s ease;animation:slideIn 0.3s ease}
+.data-table tbody tr:hover{background:rgba(34,211,238,0.05)}
+.data-table tbody td{padding:12px 14px;border-bottom:1px solid var(--glass-border);color:var(--text-primary);word-break:break-word;vertical-align:middle}
+.data-table tbody tr:last-child td{border-bottom:none}
+.amount{font-weight:700;color:var(--neon-emerald);font-family:'JetBrains Mono','Courier New',monospace;white-space:nowrap}
+.actions-cell{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+.btn-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all 0.15s ease;color:var(--text-secondary);flex-shrink:0}
+.btn-icon:hover{background:var(--neon-cyan-soft);border-color:var(--neon-cyan);color:var(--neon-cyan);transform:scale(1.06);box-shadow:0 0 12px var(--neon-cyan-glow)}
+.btn-icon:active{transform:scale(0.92)}
+.badge{display:inline-block;padding:4px 8px;border-radius:6px;background:var(--neon-cyan-soft);color:var(--neon-cyan);font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;font-family:'JetBrains Mono','Courier New',monospace;border:1px solid rgba(34,211,238,0.2)}
+.pagination{display:flex;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap}
+.page-btn{padding:7px 12px;border-radius:8px;border:1px solid var(--glass-border);background:var(--glass-fill);color:var(--text-secondary);cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s ease;backdrop-filter:blur(8px)}
+.page-btn:hover:not(:disabled){border-color:var(--neon-cyan);color:var(--neon-cyan)}
+.page-btn.active{background:linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));color:#fff;border-color:transparent;box-shadow:0 0 16px var(--neon-cyan-glow)}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed}
+.rekap-cards{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-bottom:20px}
+.rekap-card{background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);position:relative;overflow:hidden;border:1px solid var(--glass-border)}
+.rekap-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));box-shadow:0 0 12px var(--neon-cyan-glow)}
+.rekap-card.tol::before{background:linear-gradient(90deg, #22d3ee, #06b6d4)}
+.rekap-card.saku::before{background:linear-gradient(90deg, #34d399, #10b981)}
+.rekap-card.makan::before{background:linear-gradient(90deg, #fbbf24, #f59e0b)}
+.rekap-card.bbm::before{background:linear-gradient(90deg, #f97316, #ea580c)}
+.rekap-card.ops::before{background:linear-gradient(90deg, #a78bfa, #8b5cf6)}
+.rekap-card.total{grid-column:1/-1;background:linear-gradient(135deg, rgba(34,211,238,0.14), rgba(167,139,250,0.14));border:1px solid rgba(34,211,238,0.35)}
+.rekap-card.total::before{display:none}
+.rekap-card span{font-size:9px;color:var(--text-muted);display:block;margin-bottom:6px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono','Courier New',monospace}
+.rekap-card.total span{color:var(--neon-cyan)}
+.rekap-card strong{font-size:16px;display:block;color:var(--text-primary);word-break:break-word;font-weight:800;letter-spacing:-0.3px}
+.rekap-card.total strong{font-size:22px;color:var(--neon-cyan);text-shadow:0 0 16px var(--neon-cyan-glow)}
+.rekap-card small{font-size:10px;color:var(--text-faint);display:block;margin-top:4px;font-family:'JetBrains Mono','Courier New',monospace}
+.filter-box{background:var(--glass-fill);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);margin-bottom:18px;border:1px solid var(--glass-border);border-left:3px solid var(--neon-cyan)}
+.filter-grid{display:grid;gap:12px;grid-template-columns:1fr}
+.filter-item label{display:block;font-size:9px;font-weight:700;color:var(--neon-cyan);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono','Courier New',monospace}
+.filter-item select{width:100%;padding:10px 12px;border:1px solid var(--glass-border);border-radius:8px;font-size:13px;background:rgba(255,255,255,0.04);color:var(--text-primary);outline:none;cursor:pointer;transition:all 0.2s ease}
+.filter-item select:focus{border-color:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow);background:rgba(34,211,238,0.06)}
+.filter-item select option{background:var(--bg-elevated);color:var(--text-primary)}
+.fab{position:fixed;bottom:80px;right:20px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));color:#fff;border:none;box-shadow:0 8px 24px rgba(34,211,238,0.45), 0 0 40px rgba(34,211,238,0.25);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s ease, box-shadow 0.2s ease;overflow:hidden;touch-action:manipulation}
+.fab svg{width:24px;height:24px;stroke-width:2.5;stroke:currentColor;fill:none}
+.fab:hover{transform:scale(1.08);box-shadow:0 10px 30px rgba(34,211,238,0.6), 0 0 50px rgba(34,211,238,0.35)}
+.fab:active{transform:scale(0.94)}
+.fab.hidden{display:none !important}
+.modal{position:fixed;inset:0;background:rgba(3,7,18,0.78);display:flex;align-items:flex-end;justify-content:center;z-index:100000;backdrop-filter:blur(10px) saturate(120%);-webkit-backdrop-filter:blur(10px) saturate(120%)}
+.modal.hidden{display:none}
+.modal-content{background:rgba(10,15,28,0.92);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:22px;box-shadow:0 25px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);animation:slideUpModal 0.32s cubic-bezier(0.16,1,0.3,1);border-top:1px solid var(--glass-border-strong);padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+body.light-mode .modal-content{background:rgba(255,255,255,0.95)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--glass-border)}
+.modal-header h2{font-size:15px;font-weight:700;color:var(--text-primary);letter-spacing:0.3px}
+.btn-close{width:32px;height:32px;border:none;border-radius:8px;background:rgba(255,255,255,0.06);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;font-size:14px;font-weight:bold;border:1px solid var(--glass-border)}
+.btn-close:hover{background:var(--danger);color:#fff;transform:rotate(90deg);border-color:var(--danger)}
+#confirmModal .modal-content{max-width:320px;text-align:center;border-radius:16px;padding:24px;border-top:3px solid var(--danger)}
+.confirm-icon{font-size:38px;margin-bottom:12px}
+.confirm-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text-primary)}
+.confirm-text{font-size:13px;color:var(--text-muted);margin-bottom:22px;line-height:1.5}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:9px;font-weight:700;color:var(--neon-cyan);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono','Courier New',monospace}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--glass-border);border-radius:8px;font-size:16px;font-family:inherit;background:rgba(255,255,255,0.04);color:var(--text-primary);transition:all 0.2s ease;appearance:none}
+.field input::placeholder,.field textarea::placeholder{color:var(--text-faint)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;background:rgba(34,211,238,0.06);border-color:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow)}
+.field input[readonly]{background:rgba(255,255,255,0.02);color:var(--text-faint);cursor:not-allowed}
+.field textarea{resize:vertical;min-height:60px}
+.field select option{background:var(--bg-elevated);color:var(--text-primary)}
+.upload-zone{border:1px dashed var(--glass-border-strong);border-radius:10px;padding:18px;text-align:center;transition:all 0.2s ease;background:rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.upload-zone:hover{border-color:var(--neon-cyan);background:rgba(34,211,238,0.06);box-shadow:0 0 16px var(--neon-cyan-glow)}
+.upload-icon{width:30px;height:30px;color:var(--neon-cyan);margin-bottom:8px}
+.upload-text{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:10px}
+.photo-preview-container{display:none;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.photo-preview-item{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--glass-border)}
+.photo-preview-item img{width:100%;height:100%;object-fit:cover}
+.btn-remove-photo{position:absolute;top:2px;right:2px;background:rgba(248,113,113,0.95);color:#fff;border:none;border-radius:4px;width:20px;height:20px;font-size:10px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-actions{display:flex;gap:10px;margin-top:22px}
+.btn{flex:1;padding:12px 16px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;display:inline-flex;align-items:center;justify-content:center;gap:6px;letter-spacing:0.3px}
+.btn:active{transform:scale(0.97)}
+.btn:disabled{opacity:0.65;cursor:not-allowed;transform:none}
+.btn-primary{background:linear-gradient(135deg, var(--neon-cyan), #818cf8 55%, var(--neon-purple));color:#fff;box-shadow:0 6px 20px rgba(34,211,238,0.35)}
+.btn-primary:hover:not(:disabled){box-shadow:0 8px 26px rgba(34,211,238,0.55);transform:translateY(-1px)}
+.btn-secondary{background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);color:var(--text-secondary);border:1px solid var(--glass-border)}
+.btn-secondary:hover:not(:disabled){border-color:var(--neon-cyan);color:var(--neon-cyan);background:var(--neon-cyan-soft)}
+.btn-danger{background:linear-gradient(135deg, #f87171, #ef4444);color:#fff;box-shadow:0 6px 20px rgba(239,68,68,0.35)}
+.btn-danger:hover:not(:disabled){box-shadow:0 8px 26px rgba(239,68,68,0.55)}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:200000;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none;width:100%;padding:0 20px;}
+.toast{padding:12px 20px;border-radius:10px;color:#fff;font-size:12px;font-weight:600;background:rgba(10,15,28,0.95);backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);animation:toastIn 0.3s ease;max-width:100%;text-align:center;pointer-events:auto;border:1px solid var(--glass-border-strong);letter-spacing:0.3px}
+.toast.success{background:linear-gradient(135deg, rgba(52,211,153,0.95), rgba(16,185,129,0.95));border-color:rgba(52,211,153,0.5);box-shadow:0 10px 30px rgba(52,211,153,0.35)}
+.toast.error{background:linear-gradient(135deg, rgba(248,113,113,0.95), rgba(239,68,68,0.95));border-color:rgba(248,113,113,0.5);box-shadow:0 10px 30px rgba(239,68,68,0.35)}
+.toast.warning{background:linear-gradient(135deg, rgba(251,191,36,0.95), rgba(245,158,11,0.95));border-color:rgba(251,191,36,0.5);box-shadow:0 10px 30px rgba(245,158,11,0.35)}
+#imageViewer{position:fixed;inset:0;background:rgba(0,0,0,0.94);z-index:300000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s ease;backdrop-filter:blur(8px)}
+#imageViewer.active{opacity:1;pointer-events:auto}
+#imageViewer img{max-width:100%;max-height:90vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.6);border:1px solid var(--glass-border)}
+.btn-close-viewer{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.2);width:40px;height:40px;border-radius:10px;font-size:18px;cursor:pointer;backdrop-filter:blur(10px);transition:all 0.2s ease}
+.btn-close-viewer:hover{background:rgba(248,113,113,0.6)}
+#cameraModal{z-index:200000;background:rgba(0,0,0,0.9)}
+#cameraModal .modal-content{background:#000;padding:16px;max-width:600px;display:flex;flex-direction:column;align-items:center;border:1px solid var(--glass-border)}
+#cameraVideo{width:100%;border-radius:10px;max-height:60vh;object-fit:cover;background:#1a1a1a}
+.empty-tab{text-align:center;padding:30px 20px;color:var(--text-muted);font-size:13px;background:var(--glass-fill);backdrop-filter:blur(12px);border-radius:var(--radius);margin-bottom:18px;line-height:1.6;border:1px dashed var(--glass-border-strong)}
+.app-footer{position:fixed;bottom:0;left:0;width:100%;text-align:center;padding:10px;background:rgba(3,7,18,0.85);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);border-top:1px solid var(--glass-border);font-size:9px;color:var(--text-faint);font-weight:600;z-index:1000;letter-spacing:1px;font-family:'JetBrains Mono','Courier New',monospace;text-transform:uppercase;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+body.light-mode .app-footer{background:rgba(255,255,255,0.85)}
+#printKopSurat{display:none}
+
+/* ============================================================
+   MOBILE OPTIMIZATION (PERFORMANCE & LAYOUT)
+   ============================================================ */
+@media(max-width:768px){
+  /* 1. MATIKAN EFEK BERAT (BLUR & ANIMASI BACKGROUND) AGAR SCROLL MULUS */
+  body::before {
+    display: none !important; /* Sangat membebani GPU HP */
+  }
+  body {
+    background-color: var(--bg-deep) !important;
+  }
+
+  .summary-card, .recent-list, .trip-detail-header, .menu-item, 
+  .chart-card, .data-table tbody tr, .rekap-card, .filter-box, 
+  .trip-dropdown-card, .lpj-container {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(10, 15, 28, 0.95) !important; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important; /* Shadow disederhanakan */
+  }
+
+  body.light-mode .summary-card, body.light-mode .recent-list, body.light-mode .trip-detail-header, 
+  body.light-mode .menu-item, body.light-mode .chart-card, body.light-mode .data-table tbody tr, 
+  body.light-mode .rekap-card, body.light-mode .filter-box, body.light-mode .trip-dropdown-card,
+  body.light-mode .lpj-container {
+    background-color: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+  }
+
+  .app-header {
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    transform: translateZ(0); /* Force Hardware Acceleration */
+  }
+
+  /* Hilangkan animasi row tabel agar tidak patah-patah saat render */
+  .data-table tbody tr {
+    animation: none !important;
+  }
+
+  /* Hilangkan glow berlebih pada hover */
+  .menu-item:hover {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+  }
+
+  /* --- SETUP LAYOUT MOBILE --- */
+  .app-header{padding:10px 0}
+  .header-content{padding:0 12px;gap:8px}
+  .header-left{gap:8px}
+  .logo-icon{width:32px;height:32px;font-size:16px;border-radius:8px}
+  .app-header h1{font-size:11px;letter-spacing:0.2px}
+  .subtitle{font-size:8px;letter-spacing:0.2px}
+  .header-actions{gap:3px}
+  .btn-header{width:30px;height:30px;border-radius:8px}
+  .btn-header svg{width:14px;height:14px}
+  
+  .view{padding:16px 12px}
+  
+  /* Dashboard */
+  .dash-filter{gap:8px}
+  .dash-filter select{padding:10px;font-size:12px}
+  .dash-summary-grid{gap:10px;margin-bottom:14px}
+  .summary-card{padding:14px 12px}
+  .summary-card strong{font-size:16px}
+  .summary-card span{font-size:8px}
+  
+  /* Charts */
+  .chart-card{padding:12px;margin-bottom:16px}
+  .chart-container{height:200px}
+  
+  /* Menu Grid Mobile */
+  .menu-grid{gap:10px;margin-bottom:16px}
+  .menu-item{padding:14px 8px;min-height:90px;border-radius:12px}
+  .menu-icon{width:36px;height:36px;padding:8px;margin-bottom:8px;border-radius:8px}
+  .menu-item h3{font-size:11px;line-height:1.2}
+  
+  /* LPJ & Rekap Full Width di HP */
+  .menu-item.rekap, .menu-item.lpj { grid-column: 1 / -1; padding: 14px; }
+  .menu-item.rekap h3, .menu-item.lpj h3 { font-size: 13px; }
+  
+  /* Tabel Mobile (Card Layout) */
+  .data-table thead{display:none}
+  .data-table,.data-table tbody,.data-table tr,.data-table td{display:block;width:100%}
+  .data-table{background:transparent !important;backdrop-filter:none !important;border:none !important;box-shadow:none !important;border-spacing:0}
+  .data-table tbody tr{background:var(--glass-fill);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid var(--glass-border);border-left:3px solid var(--neon-cyan);box-shadow:var(--shadow-sm)}
+  .data-table tbody td{padding:6px 0;border:none;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;text-align:right}
+  .data-table tbody td::before{content:attr(data-label);font-weight:700;color:var(--text-muted);font-size:9px;margin-right:10px;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0;width:45%;text-align:left;margin-top:3px;font-family:'JetBrains Mono','Courier New',monospace}
+  .data-table tbody td > div,.data-table tbody td > span,.data-table tbody td > a{text-align:right;max-width:55%;word-break:break-word}
+  .data-table tbody td.actions-cell{justify-content:flex-end !important;padding-top:14px;border-top:1px dashed var(--glass-border);margin-top:10px;gap:8px !important;text-align:right;max-width:100%;}
+  .actions-cell::before{display:none}
+  
+  /* Rekap */
+  .rekap-cards{gap:10px;margin-bottom:16px}
+  .rekap-card{padding:14px 12px}
+  .rekap-card span{font-size:8px;margin-bottom:4px}
+  .rekap-card strong{font-size:14px}
+  .rekap-card.total strong{font-size:20px}
+  
+  /* Filter Box */
+  .filter-box{padding:14px;margin-bottom:16px}
+  .filter-grid{gap:10px}
+  .filter-item label{font-size:8px}
+  .filter-item select{padding:9px 10px;font-size:12px}
+  
+  /* LPJ Mobile Adjustments */
+  .lpj-container{padding:16px !important;border-radius:12px !important}
+  .lpj-container h2{font-size:15px !important}
+  .lpj-container h3{font-size:10px !important;padding:8px 10px !important}
+  .lpj-row { font-size: 12px; }
+  .lpj-input-group { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 8px;}
+  .lpj-input-group input { width: 100% !important; font-size: 14px !important; }
+  
+  /* Form Modal */
+  .modal-content{padding:20px 16px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  .modal-actions{gap:10px;margin-top:18px}
+  .btn{padding:12px;font-size:13px}
+  
+  /* Table Toolbar */
+  .table-toolbar{flex-direction:column;align-items:stretch;gap:8px}
+  .search-input{max-width:100%;font-size:13px}
+  
+  /* Login */
+  #loginView{padding:16px}
+  .login-card{padding:28px 20px}
+  .matrix-title{font-size:18px;letter-spacing:2px}
+  .matrix-subtitle{font-size:9px;letter-spacing:1.5px}
+}
+
+@media(min-width:769px){
+  .dash-summary-grid{grid-template-columns:1fr 1fr;gap:16px}
+  .summary-card strong{font-size:24px}
+  .filter-grid{grid-template-columns:repeat(2,1fr)}
+  .modal{align-items:center}
+  .modal-content{border-radius:20px}
+  .menu-item.rekap, .menu-item.lpj { width: auto; }
+}
+@media(min-width:900px){.filter-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- HIGH TECH LOGIN VIEW -->
+<div id="loginView">
+  <div class="login-card">
+    <h2 class="matrix-title">SYSTEM ACCESS</h2>
+    <p class="matrix-subtitle">Authorized Personnel Only</p>
+
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="[ Enter ID ]" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div style="position: relative;">
+        <input type="password" id="loginPass" placeholder="[ Enter Passkey ]" style="padding-right: 44px;">
+        <button type="button" onclick="togglePasswordVisibility()" id="btnTogglePass" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #22d3ee; display: flex; align-items: center; justify-content: center; padding: 5px; text-shadow: 0 0 8px #22d3ee;">
+          👁️
+        </button>
+      </div>
+    </div>
+    <button class="matrix-btn" id="btnLogin" onclick="doLogin()">Initiate Session</button>
+    <div class="matrix-footer">
+      SECURED SYSTEM v3.3<br><strong>Agung Prakosa</strong>
+    </div>
+  </div>
+</div>
+
+<div id="mainApp" class="hidden">
+  <div id="progressBar"></div>
+
+  <header class="app-header no-print">
+    <div class="header-content">
+      <div class="header-left">
+        <span class="logo-icon">💠</span>
+        <div>
+          <h1>SISTEM PENCATATAN PERJALANAN DINAS</h1>
+          <p class="subtitle" id="headerUserName">INITIALIZING...</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-header" onclick="toggleDarkMode()" id="btnDarkMode" title="Ganti Tema">
+          <svg id="iconDark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg id="iconLight" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+        <button class="btn-header" onclick="openProfileModal()" title="Profil Saya">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </button>
+        <button class="btn-header" id="btnAdminUsers" style="display:none;" onclick="openUserManagement()" title="Kelola User">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </button>
+        <button class="btn-header" onclick="exportCSV()" title="Export Excel (CSV)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </button>
+        <button class="btn-header" onclick="openGlobalCategory()" title="Semua Transaksi">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        </button>
+        <button class="btn-header logout" onclick="doLogout()" title="Keluar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="printKopSurat">
+    <h1>PEMERINTAH KOTA / INSTANSI ANDA</h1>
+    <p>Jl. Contoh Alamat No. 123, Kota Anda, Provinsi | Telp: (021) 1234567 | Email: info@instansi.go.id</p>
+  </div>
+
+  <main id="viewDashboard" class="view hidden">
+    <div id="loadingState" class="no-print">
+      <div class="skeleton skeleton-title"></div>
+      <div class="dash-summary-grid">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+      </div>
+      <div class="skeleton skeleton-card" style="height: 240px;"></div>
+      <div class="skeleton skeleton-title" style="margin-top: 30px;"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+
+    <div id="dashboardList" style="display:none;">
+      <div class="dash-filter no-print">
+        <select id="dashFilterMonth" onchange="handleDashFilter()">
+          <option value="">Semua Bulan</option>
+          <option value="01">Januari</option>
+          <option value="02">Februari</option>
+          <option value="03">Maret</option>
+          <option value="04">April</option>
+          <option value="05">Mei</option>
+          <option value="06">Juni</option>
+          <option value="07">Juli</option>
+          <option value="08">Agustus</option>
+          <option value="09">September</option>
+          <option value="10">Oktober</option>
+          <option value="11">November</option>
+          <option value="12">Desember</option>
+        </select>
+        <select id="dashFilterYear" onchange="handleDashFilter()">
+          <option value="">Semua Tahun</option>
+        </select>
+      </div>
+
+      <div class="dash-summary-grid">
+        <div class="summary-card">
+          <span>Total Perjalanan</span>
+          <strong id="sumTrips">0</strong>
+        </div>
+        <div class="summary-card green">
+          <span>Total Pengeluaran</span>
+          <strong id="sumExpenses">Rp 0</strong>
+        </div>
+      </div>
+
+      <div class="charts-grid no-print">
+        <div class="chart-card" id="chartCard">
+          <div class="chart-header">
+            <h3>📊 Komposisi Pengeluaran</h3>
+          </div>
+          <div class="chart-container">
+            <canvas id="expenseChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card" id="trendChartCard">
+          <div class="chart-header">
+            <h3>📈 Tren Pengeluaran Bulanan</h3>
+          </div>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="trip-dropdown-card no-print">
+        <label>📁 Buka Perjalanan Dinas</label>
+        <div class="trip-dropdown-wrapper">
+          <select id="tripDropdown" onchange="onTripDropdownChange(this.value)">
+            <option value="">-- Pilih Perjalanan --</option>
+          </select>
+        </div>
+      </div>
+
+      <h2 class="section-title">⏱️ Transaksi Terakhir</h2>
+      <div id="recentTransactionsContainer" class="recent-list"></div>
+    </div>
+  </main>
+
+  <main id="viewTripDetail" class="view hidden">
+    <div class="no-print">
+      <button class="btn-back" onclick="closeTripDetail()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Kembali ke Daftar
+      </button>
+    </div>
+
+    <div class="print-header" style="display:none;">
+      <h1>LAPORAN PERJALANAN DINAS</h1>
+      <p id="printSubtitle"></p>
+    </div>
+
+    <div id="tripDetailHeader" class="trip-detail-header"></div>
+
+    <!-- MENU GRID UTAMA -->
+    <div class="menu-grid no-print">
+      <div class="menu-item" onclick="openCategory('tol')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19L10 5"/><path d="M20 19L14 5"/><path d="M12 19v-2"/><path d="M12 13v-2"/><path d="M12 7V5"/></svg></div>
+        <h3>Biaya Tol</h3>
+      </div>
+      <div class="menu-item" onclick="openCategory('bbm')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h16"/><path d="M4 18h16"/><path d="M4 10h16"/><path d="M6 6h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M8 2v4"/><path d="M16 2v4"/></svg></div>
+        <h3>Biaya BBM</h3>
+      </div>
+      <div class="menu-item" onclick="openCategory('saku')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div>
+        <h3>Uang Saku</h3>
+      </div>
+      <div class="menu-item" onclick="openCategory('makan')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>
+        <h3>Uang Makan</h3>
+      </div>
+      <div class="menu-item" onclick="openCategory('operasional')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <h3>Operasional</h3>
+      </div>
+
+      <div class="menu-item rekap" onclick="openCategory('rekap')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
+        <h3>Lihat Rekap Biaya</h3>
+      </div>
+
+      <div class="menu-item lpj" onclick="openCategory('lpj')">
+        <div class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+        <h3>Laporan Pertanggungjawaban (LPJ)</h3>
+      </div>
+    </div>
+
+    <div id="categoryContent" style="animation: fadeUp .3s;"></div>
+  </main>
+
+  <main id="viewGlobal" class="view hidden">
+    <div class="no-print">
+      <button class="btn-back" onclick="closeGlobalCategory()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Kembali ke Beranda
+      </button>
+      <h2 class="section-title">🌐 Semua Transaksi</h2>
+    </div>
+
+    <div class="print-header" style="display:none;">
+      <h1>LAPORAN GLOBAL TRANSAKSI PERJALANAN</h1>
+    </div>
+
+    <div id="globalContent"></div>
+  </main>
+
+  <main id="viewUserManagement" class="view hidden">
+    <div class="no-print">
+      <button class="btn-back" onclick="closeUserManagement()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Kembali ke Beranda
+      </button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap: 10px;">
+        <h2 class="section-title" style="margin:0;">👥 Manajemen User</h2>
+        <button class="btn btn-primary" style="flex: none; width: auto; padding: 9px 14px; font-size: 12px;" onclick="openUserForm()">+ Tambah User</button>
+      </div>
+    </div>
+    <div id="userListContainer"></div>
+  </main>
+
+  <button class="fab hidden no-print" id="fab" title="Tambah">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+  </button>
+
+  <div class="modal hidden no-print" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Tambah Data</h2>
+        <button type="button" class="btn-close" onclick="closeModal()">✕</button>
+      </div>
+      <form id="form" onsubmit="event.preventDefault();submitForm();">
+        <div id="formFields"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmit">💾 Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden no-print" id="confirmModal">
+    <div class="modal-content">
+      <div class="confirm-icon" id="confirmIcon">⚠️</div>
+      <h2 class="confirm-title" id="confirmTitle">Konfirmasi</h2>
+      <p class="confirm-text" id="confirmText">Apakah Anda yakin?</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="resolveConfirm(false)">Batal</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmYes" onclick="resolveConfirm(true)">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden no-print" id="cameraModal">
+    <div class="modal-content">
+      <div class="modal-header" style="border:none; padding:0; margin-bottom:10px; width:100%;">
+        <h2 style="color:#fff; font-size:15px;">📷 Ambil Foto</h2>
+        <button type="button" class="btn-close" onclick="closeCameraModal()" style="background:rgba(255,255,255,0.15); color:#fff;">✕</button>
+      </div>
+      <video id="cameraVideo" autoplay playsinline></video>
+      <div style="display:flex; gap:10px; width:100%; margin-top:12px;">
+        <button type="button" class="btn btn-secondary" onclick="closeCameraModal()" style="background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15);">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="capturePhoto()">📸 Ambil Foto</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="imageViewer" class="no-print" onclick="closeImageViewer()">
+    <button class="btn-close-viewer">✕</button>
+    <img id="fullImage" src="" alt="Foto Bukti" onclick="event.stopPropagation()">
+  </div>
+
+  <div id="toast" class="no-print"></div>
+
+  <div class="app-footer no-print">Neon Glass Edition v3.4 — Agung Prakosa</div>
+</div>
+
+<script>
+/* =====================================================
+   👇 TEMPEL DISINI URL WEB APP ANDA DI SINI 👇
+===================================================== */
+const API_URL = "https://script.google.com/macros/s/AKfycbxwLhObIDpRhZyUNOF_t5BW_yaO-7M4FQTDWBokuprvwZbkLTmMsAmJirL7HXH7vIBi/exec";
+
+const state = {
+  data: { perjalanan:[], tol:[], saku:[], makan:[], bbm:[], operasional:[], pengaturan:[], users:[] },
+  currentUser: null,
+  activeTripId: null,
+  activeCategory: null,
+  editing: null,
+  mode: null,
+  globalFilters: { tripId: '', month: '', year: '', category: '' },
+  dashFilters: { month: '', year: '' },
+  searchQuery: '',
+  currentPage: 1,
+  itemsPerPage: 10
+};
+
+let expenseChartInstance = null;
+let trendChartInstance = null;
+let cameraStream = null;
+let idleTimer = null;
+let confirmResolver = null;
+
+const $ = s => document.querySelector(s);
+
+/* =====================================================
+   API HELPER (POST + token sesi)
+   - Content-Type text/plain agar tidak memicu CORS preflight
+   - Data tidak lagi dikirim lewat URL (aman & tanpa batas panjang URL)
+===================================================== */
+async function api(action, params = {}, opts = {}) {
+  const body = Object.assign({ action, token: localStorage.getItem('sessionToken') || '' }, params);
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(body),
+    signal: opts.signal,
+    cache: 'no-store'
+  });
+  const data = await res.json();
+  if (!data.ok && data.error === 'SESSION_EXPIRED') {
+    if (state.currentUser) { doLogout(true); showToast('Sesi berakhir, silakan login kembali', 'warning'); }
+    throw new Error('Sesi berakhir');
+  }
+  return data;
+}
+
+/* =====================================================
+   NUMBER PARSING HELPERS
+===================================================== */
+function toNumber(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  if (typeof v === 'number') return isNaN(v) ? 0 : v;
+  const s = String(v).trim();
+  if (!s) return 0;
+  if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) {
+    return Number(s.replace(/\./g, '').replace(',', '.')) || 0;
+  }
+  return Number(s) || 0;
+}
+
+function cleanNumberString(str) {
+  if (str === null || str === undefined) return 0;
+  const s = String(str).replace(/[^\d-]/g, '');
+  return Number(s) || 0;
+}
+
+/* =====================================================
+   FORMAT & UTIL
+===================================================== */
+function today(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function pick(v, def) { return (v === undefined || v === null || v === '') ? def : v; }
+function formatRupiah(n){ return 'Rp ' + (toNumber(n)).toLocaleString('id-ID'); }
+function formatDate(s){
+  if(!s) return '-';
+  const raw = String(s).slice(0,10);
+  const d = new Date(raw+'T00:00:00');
+  if (isNaN(d.getTime())) return s;
+  return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+}
+function escapeHtml(s){
+  if(s==null) return '';
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function unescapeHtml(s){
+  if(s==null) return '';
+  return String(s).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+}
+function getMonthName(m) {
+  const names = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  return names[m-1] || '';
+}
+function labelFor(tab){
+  return { perjalanan:'Perjalanan', tol:'Biaya Tol', saku:'Uang Saku', makan:'Uang Makan', bbm:'Biaya BBM', operasional:'Operasional', rekap:'Rekap Biaya', lpj:'Laporan Pertanggungjawaban', admin:'Admin E-Toll' }[tab] || tab;
+}
+
+/* =====================================================
+   THEME
+===================================================== */
+function initTheme() {
+  const isLight = localStorage.getItem('lightMode') === 'true';
+  if (isLight) {
+    document.body.classList.add('light-mode');
+    $('#iconDark').style.display = 'block';
+    $('#iconLight').style.display = 'none';
+  } else {
+    document.body.classList.remove('light-mode');
+    $('#iconDark').style.display = 'none';
+    $('#iconLight').style.display = 'block';
+  }
+}
+
+window.toggleDarkMode = function() {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  localStorage.setItem('lightMode', isLight);
+
+  if (isLight) {
+    $('#iconDark').style.display = 'block';
+    $('#iconLight').style.display = 'none';
+  } else {
+    $('#iconDark').style.display = 'none';
+    $('#iconLight').style.display = 'block';
+  }
+
+  if (expenseChartInstance) { expenseChartInstance.destroy(); }
+  if (trendChartInstance) { trendChartInstance.destroy(); }
+  renderDashboardList();
+};
+
+/* =====================================================
+   FORMAT INPUT
+===================================================== */
+window.formatRupiahInput = function(el) {
+  let val = el.value.replace(/\D/g, '');
+  if (val) {
+    val = parseInt(val, 10).toLocaleString('id-ID');
+  }
+  el.value = val;
+};
+
+/* =====================================================
+   CONFIRM / TOAST / LOADING
+===================================================== */
+window.showConfirm = function(title, text, icon = '⚠️', btnText = 'Ya, Hapus') {
+  return new Promise((resolve) => {
+    confirmResolver = resolve;
+    $('#confirmTitle').textContent = title;
+    $('#confirmText').textContent = text;
+    $('#confirmIcon').textContent = icon;
+    $('#btnConfirmYes').textContent = btnText;
+    $('#confirmModal').classList.remove('hidden');
+  });
+};
+window.resolveConfirm = function(val) {
+  $('#confirmModal').classList.add('hidden');
+  if (confirmResolver) confirmResolver(val);
+  confirmResolver = null;
+};
+
+function showLoading(){ $('#progressBar').classList.add('active'); }
+function hideLoading(){ const b = $('#progressBar'); b.classList.remove('active'); b.style.width='100%'; setTimeout(()=>{b.style.width='0';},300); }
+
+function showToast(msg, type='success'){
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  $('#toast').appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3000);
+}
+
+/* =====================================================
+   IDLE & AUTH
+===================================================== */
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  if (state.currentUser) {
+    idleTimer = setTimeout(() => {
+      doLogout();
+      showToast('Sesi berakhir karena tidak ada aktivitas selama 10 menit', 'warning');
+    }, 10 * 60 * 1000);
+  }
+}
+
+// Hanya mendengarkan event yang benar-benar menandakan aktivitas, hindari scroll/mousemove agar performa HP tidak turun
+['keydown', 'click', 'touchstart'].forEach(evt => {
+  document.addEventListener(evt, resetIdleTimer, { capture: true, passive: true });
+});
+
+function checkAuth() {
+  initTheme();
+  const saved = localStorage.getItem('currentUser');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.ID && parsed.Username && localStorage.getItem('sessionToken')) {
+        state.currentUser = parsed;
+        showMainApp();
+        return;
+      }
+    } catch (e) {}
+    localStorage.removeItem('currentUser');
+  }
+  $('#loginView').style.display = 'flex';
+  $('#mainApp').classList.add('hidden');
+}
+
+function showMainApp() {
+  $('#loginView').style.display = 'none';
+  $('#mainApp').classList.remove('hidden');
+  $('#headerUserName').textContent = state.currentUser.NamaLengkap.toUpperCase() + ' // ' + state.currentUser.Role.toUpperCase();
+
+  if (state.currentUser.Role === 'Admin') {
+    $('#btnAdminUsers').style.display = 'flex';
+  } else {
+    $('#btnAdminUsers').style.display = 'none';
+  }
+
+  resetIdleTimer();
+  loadData();
+}
+
+window.togglePasswordVisibility = function() {
+  const input = document.getElementById('loginPass');
+  const btn = document.getElementById('btnTogglePass');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
+};
+
+async function doLogin() {
+  const u = $('#loginUser').value;
+  const p = $('#loginPass').value;
+  if (!u || !p) return showToast('Username dan password wajib diisi', 'error');
+
+  const btn = document.getElementById('btnLogin');
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'AUTHENTICATING...';
+
+  showLoading();
+  try {
+    const data = await api('login', { username: u.trim(), password: p });
+    if (data.ok) {
+      state.currentUser = data.user;
+      localStorage.setItem('sessionToken', data.token);
+      $('#loginPass').value = '';
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
+      showMainApp();
+      showToast('Selamat datang, ' + data.user.NamaLengkap, 'success');
+    } else {
+      showToast(data.error, 'error');
+    }
+  } catch (err) {
+    showToast('Gagal terhubung ke server', 'error');
+  } finally {
+    hideLoading();
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+function doLogout(skipServer) {
+  const tok = localStorage.getItem('sessionToken');
+  if (tok && skipServer !== true) { api('logout').catch(()=>{}); }
+  localStorage.removeItem('sessionToken');
+  state.currentUser = null;
+  state.activeTripId = null;
+  state.activeCategory = null;
+  state.editing = null;
+  state.mode = null;
+  state.globalFilters = { tripId: '', month: '', year: '', category: '' };
+  state.dashFilters = { month: '', year: '' };
+  state.data = { perjalanan:[], tol:[], saku:[], makan:[], bbm:[], operasional:[], pengaturan:[], users:[] };
+
+  localStorage.removeItem('currentUser');
+  clearTimeout(idleTimer);
+
+  ['#viewDashboard','#viewTripDetail','#viewGlobal','#viewUserManagement'].forEach(sel => {
+    const el = document.querySelector(sel);
+    if (el) el.classList.add('hidden');
+  });
+  const fab = document.querySelector('#fab');
+  if (fab) fab.classList.add('hidden');
+  const modal = document.querySelector('#modal');
+  if (modal) modal.classList.add('hidden');
+
+  $('#loginView').style.display = 'flex';
+  $('#mainApp').classList.add('hidden');
+  $('#loginUser').value = '';
+  $('#loginPass').value = '';
+  $('#loginPass').type = 'password';
+  $('#btnTogglePass').textContent = '👁️';
+}
+
+/* =====================================================
+   MODAL & IMAGE VIEWER
+===================================================== */
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (!$('#modal').classList.contains('hidden')) closeModal();
+    if (!$('#confirmModal').classList.contains('hidden')) resolveConfirm(false);
+    if (!$('#cameraModal').classList.contains('hidden')) closeCameraModal();
+    if ($('#imageViewer').classList.contains('active')) closeImageViewer();
+  }
+});
+
+function openModal(title, fieldsHtml, mode, editing){
+  state.mode = mode;
+  state.editing = editing || null;
+  $('#modalTitle').textContent = title;
+  $('#formFields').innerHTML = fieldsHtml;
+  $('#modal').classList.remove('hidden');
+}
+function closeModal(){
+  $('#modal').classList.add('hidden');
+  state.mode = null; state.editing = null;
+}
+
+window.viewImage = function(url) {
+  if(!url) return;
+  $('#fullImage').src = url;
+  $('#imageViewer').classList.add('active');
+};
+window.closeImageViewer = function() {
+  $('#imageViewer').classList.remove('active');
+  setTimeout(() => { $('#fullImage').src = ''; }, 200);
+};
+
+window.openCameraModal = async function() {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    const video = document.getElementById('cameraVideo');
+    video.srcObject = cameraStream;
+    document.getElementById('cameraModal').classList.remove('hidden');
+  } catch (err) {
+    showToast('Gagal mengakses kamera: ' + err.message, 'error');
+  }
+};
+
+window.closeCameraModal = function() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+  document.getElementById('cameraModal').classList.add('hidden');
+};
+
+window.capturePhoto = function() {
+  const video = document.getElementById('cameraVideo');
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+
+  let currentVal = document.getElementById('fotoBase64').value;
+  let arr = [];
+  try { arr = JSON.parse(currentVal); if(!Array.isArray(arr)) arr = []; } catch(e) { if(currentVal) arr = [currentVal]; }
+  arr.push(dataUrl);
+  document.getElementById('fotoBase64').value = JSON.stringify(arr);
+
+  renderPhotoPreviews(arr);
+  closeCameraModal();
+};
+
+/* =====================================================
+   LOAD DATA
+===================================================== */
+async function loadData(silent){
+  if (!silent) {
+    showLoading();
+    $('#viewDashboard').classList.remove('hidden');
+    $('#loadingState').style.display = 'block';
+    $('#dashboardList').style.display = 'none';
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const res = await api('getAllData', {}, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if(!res.ok) throw new Error(res.error || 'Gagal memuat data');
+
+    state.data = res;
+
+    const years = new Set();
+    state.data.perjalanan.forEach(p => { if(p.TglBerangkat) years.add(p.TglBerangkat.slice(0,4)); });
+    const yearSelect = $('#dashFilterYear');
+    const currentVal = yearSelect.value;
+    yearSelect.innerHTML = `<option value="">Semua Tahun</option>` +
+      Array.from(years).sort().reverse().map(y => `<option value="${y}" ${y===currentVal?'selected':''}>${y}</option>`).join('');
+
+    setTimeout(() => {
+        $('#loadingState').style.display = 'none';
+        $('#dashboardList').style.display = 'block';
+
+        renderDashboardList();
+        if(state.activeTripId) {
+          renderTripDetailHeader();
+          renderCategoryContent();
+        }
+        if (!$('#viewUserManagement').classList.contains('hidden')) {
+          renderUserList();
+        }
+        updateFab();
+    }, 400);
+
+  } catch(err) {
+    clearTimeout(timeoutId);
+    let errMsg = err.name === 'AbortError' ? "Waktu habis. Server lambat merespons." : err.message;
+    if (silent) {
+      showToast('Gagal refresh: ' + errMsg, 'error');
+    } else {
+      $('#loadingState').innerHTML = `
+        <div style="background:var(--glass-fill); backdrop-filter:blur(16px); padding:30px 20px; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--glass-border); text-align:center;">
+          <p style="font-size: 36px; margin-bottom: 16px;">⚠️</p>
+          <h3 style="color: var(--danger); margin-bottom: 10px;">Gagal Memuat</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 22px;">${escapeHtml(errMsg)}</p>
+          <button class="btn btn-primary" onclick="loadData()" style="max-width: 200px; margin: 0 auto;">Coba Lagi</button>
+        </div>`;
+    }
+  } finally {
+    if (!silent) hideLoading();
+  }
+}
+
+window.handleDashFilter = function() {
+  state.dashFilters.month = $('#dashFilterMonth').value;
+  state.dashFilters.year = $('#dashFilterYear').value;
+  renderDashboardList();
+};
+
+/* =====================================================
+   DATA HELPERS
+===================================================== */
+window.exportCSV = function() {
+  const d = state.data;
+  const trips = Object.fromEntries((d.perjalanan||[]).map(p => [p.ID, p]));
+  const rows = [['Kategori','Tanggal','Pegawai','Tujuan','Uraian','Nominal','Keterangan','ID Perjalanan']];
+  const add = (kat, list, uraian, nominal) => (list||[]).forEach(r => {
+    const p = trips[r.IDPerjalanan] || {};
+    rows.push([kat, r.Tanggal||'', p.NamaPegawai||'', p.Tujuan||'', uraian(r), nominal(r), r.Keterangan||'', r.IDPerjalanan||'']);
+  });
+  add('Biaya Tol', d.tol, r => `${r.GerbangMasuk||''} - ${r.GerbangKeluar||''}`, r => toNumber(r.Nominal));
+  add('Uang Saku', d.saku, r => r.Uraian||'', r => toNumber(r.Total));
+  add('Uang Makan', d.makan, r => `${r.Uraian||''} ${r.Waktu||''}`.trim(), r => toNumber(r.Nominal));
+  add('Biaya BBM', d.bbm, r => r.Uraian||'', r => toNumber(r.Nominal));
+  add('Operasional', d.operasional, r => `${r.Kategori||''} ${r.Uraian||''}`.trim(), r => toNumber(r.Nominal));
+  if (rows.length === 1) return showToast('Belum ada data untuk diexport', 'warning');
+  const csv = '\uFEFF' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(';')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `Transaksi_Perjalanan_${today()}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  showToast('📥 File CSV diunduh', 'success');
+};
+
+const SHEET = { PERJALANAN:'Perjalanan', TOL:'BiayaTol', SAKU:'UangSaku', MAKAN:'UangMakan', BBM:'BiayaBBM', OPERASIONAL:'Operasional', USERS:'Users' };
+
+function dataForTab(tab){
+  return { tol: state.data.tol, saku: state.data.saku, makan: state.data.makan, bbm: state.data.bbm, operasional: state.data.operasional }[tab] || [];
+}
+
+function getAllTransactionsRaw() {
+  const list = [];
+
+  const pushTx = (r, type, label, color, desc, amt, sheet, editFn) => {
+    const trip = state.data.perjalanan.find(p => p.ID === r.IDPerjalanan);
+    list.push({
+      type, typeLabel: label, color, id: r.ID, tripId: r.IDPerjalanan,
+      tripName: trip ? trip.NamaPegawai : 'Perjalanan Dihapus',
+      rawDate: r.Tanggal, displayDate: formatDate(r.Tanggal),
+      createdDate: r.CreatedDate || r.Tanggal || '',
+      createdTime: r.CreatedTime || '00:00:00',
+      desc, amount: toNumber(amt), foto: r.Foto || '', sheet, editFn,
+      isVirtual: false
+    });
+  };
+
+  state.data.tol.forEach(r => {
+    const gm = r.GerbangMasuk ? escapeHtml(r.GerbangMasuk) : 'Gerbang Masuk';
+    const gk = r.GerbangKeluar ? escapeHtml(r.GerbangKeluar) : 'Gerbang Keluar';
+    pushTx(r, 'tol', 'Tol', '#22d3ee', `${gm} → ${gk}`, r.Nominal, SHEET.TOL, `openFormTol('${r.ID}')`);
+  });
+
+  state.data.saku.forEach(r => pushTx(r, 'saku', 'Uang Saku', '#34d399', escapeHtml(r.Uraian), r.Total, SHEET.SAKU, `openFormSaku('${r.ID}')`));
+
+  state.data.makan.forEach(r => pushTx(r, 'makan', 'Uang Makan', '#fbbf24', escapeHtml(r.Uraian), r.Nominal, SHEET.MAKAN, `openFormMakan('${r.ID}')`));
+
+  state.data.bbm.forEach(r => pushTx(r, 'bbm', 'BBM', '#f97316', escapeHtml(r.Uraian), r.Nominal, SHEET.BBM, `openFormBbm('${r.ID}')`));
+
+  state.data.operasional.forEach(r => pushTx(r, 'operasional', r.Kategori||'Ops', '#a78bfa', escapeHtml(r.Uraian), r.Nominal, SHEET.OPERASIONAL, `openFormOperasional('${r.ID}')`));
+
+  // Virtual: Biaya Admin E-Toll
+  state.data.perjalanan.forEach(p => {
+    const admin = toNumber(p.ETolAdmin);
+    if (admin > 0) {
+      list.push({
+        type: 'admin', typeLabel: 'Admin E-Toll', color: '#f472b6',
+        id: 'ADMIN_' + p.ID, tripId: p.ID,
+        tripName: p.NamaPegawai,
+        rawDate: p.TglBerangkat, displayDate: formatDate(p.TglBerangkat),
+        createdDate: p.CreatedDate || p.TglBerangkat || '',
+        createdTime: p.CreatedTime || '00:00:00',
+        desc: 'Biaya admin top up E-Toll',
+        amount: admin, foto: '', sheet: null,
+        editFn: `openFormPerjalanan('${p.ID}')`,
+        isVirtual: true
+      });
+    }
+  });
+
+  return list.sort((a, b) => {
+    const da = a.rawDate ? new Date(a.rawDate).getTime() : 0;
+    const db = b.rawDate ? new Date(b.rawDate).getTime() : 0;
+    return (db || 0) - (da || 0);
+  });
+}
+
+// Total per perjalanan
+function getTripTotals(id){
+  const sum = (arr, key) => arr.filter(x=>x.IDPerjalanan===id).reduce((s,x)=>s+toNumber(x[key]),0);
+  const tol   = sum(state.data.tol,'Nominal');
+  const saku  = sum(state.data.saku,'Total');
+  const makan = sum(state.data.makan,'Nominal');
+  const bbm   = sum(state.data.bbm,'Nominal');
+  const ops   = sum(state.data.operasional,'Nominal');
+
+  const p = state.data.perjalanan.find(x => x.ID === id);
+  const etolAdmin = p ? toNumber(p.ETolAdmin) : 0;
+
+  return { tol, saku, makan, bbm, ops, admin: etolAdmin, total: tol+saku+makan+bbm+ops+etolAdmin };
+}
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+function renderDashboardList() {
+  const f = state.dashFilters;
+  let allTx = getAllTransactionsRaw();
+
+  // Filter role
+  if (state.currentUser.Role !== 'Admin') {
+    const myName = state.currentUser.NamaLengkap.toLowerCase().trim();
+    const myTripIds = state.data.perjalanan
+      .filter(p => String(p.NamaPegawai).toLowerCase().trim() === myName)
+      .map(p => p.ID);
+    allTx = allTx.filter(tx => myTripIds.includes(tx.tripId));
+  }
+
+  // Filter periode — berdasarkan Tanggal TRANSAKSI
+  const filteredTx = allTx.filter(tx => {
+    if (f.year && (!tx.rawDate || !tx.rawDate.startsWith(f.year))) return false;
+    if (f.month && (!tx.rawDate || tx.rawDate.slice(5, 7) !== f.month)) return false;
+    return true;
+  });
+
+  const hasPeriodFilter = !!(f.year || f.month);
+  const tripIdsWithTx = new Set(filteredTx.map(tx => tx.tripId));
+
+  // Tentukan trip yang ditampilkan
+  const filteredTrips = state.data.perjalanan.filter(p => {
+    if (state.currentUser.Role !== 'Admin') {
+      const myName = state.currentUser.NamaLengkap.toLowerCase().trim();
+      if (String(p.NamaPegawai).toLowerCase().trim() !== myName) return false;
+    }
+    if (!hasPeriodFilter) return true;
+    return tripIdsWithTx.has(p.ID);
+  }).sort((a,b) => new Date(b.TglBerangkat) - new Date(a.TglBerangkat));
+
+  // Agregasi per kategori dari filteredTx
+  let totalTol = 0, totalSaku = 0, totalMakan = 0, totalBBM = 0, totalOps = 0, totalAdmin = 0;
+  filteredTx.forEach(tx => {
+    if (tx.type === 'tol') totalTol += tx.amount;
+    else if (tx.type === 'saku') totalSaku += tx.amount;
+    else if (tx.type === 'makan') totalMakan += tx.amount;
+    else if (tx.type === 'bbm') totalBBM += tx.amount;
+    else if (tx.type === 'operasional') totalOps += tx.amount;
+    else if (tx.type === 'admin') totalAdmin += tx.amount;
+  });
+  const grandTotal = totalTol + totalSaku + totalMakan + totalBBM + totalOps + totalAdmin;
+
+  $('#sumTrips').textContent = filteredTrips.length;
+  $('#sumExpenses').textContent = formatRupiah(grandTotal);
+
+  renderChart(totalTol, totalSaku, totalMakan, totalBBM, totalOps, totalAdmin);
+
+  // Trend bulanan — dari Tanggal transaksi
+  const monthlyTotals = {};
+  filteredTx.forEach(tx => {
+    if (tx.rawDate) {
+      const ym = tx.rawDate.slice(0, 7);
+      monthlyTotals[ym] = (monthlyTotals[ym] || 0) + tx.amount;
+    }
+  });
+  renderTrendChart(monthlyTotals);
+
+  // Dropdown perjalanan
+  const select = $('#tripDropdown');
+  if (filteredTrips.length === 0) {
+    select.innerHTML = `<option value="">-- Tidak ada perjalanan --</option>`;
+    select.disabled = true;
+  } else {
+    select.disabled = false;
+    select.innerHTML = `<option value="">-- Pilih Perjalanan --</option>` +
+      filteredTrips.map(p => `<option value="${p.ID}">${escapeHtml(p.NamaPegawai)} - ${escapeHtml(p.Tujuan)} (${formatDate(p.TglBerangkat)})</option>`).join('');
+  }
+
+  // Recent transactions
+  const top5 = [...filteredTx].sort((a, b) => {
+    const ta = new Date(`${a.createdDate}T${a.createdTime}`).getTime() || new Date(a.rawDate).getTime() || 0;
+    const tb = new Date(`${b.createdDate}T${b.createdTime}`).getTime() || new Date(b.rawDate).getTime() || 0;
+    return tb - ta;
+  }).slice(0, 5);
+
+  const recentContainer = $('#recentTransactionsContainer');
+  if (top5.length === 0) {
+    recentContainer.innerHTML = `<div style="padding:24px 16px; text-align:center; color:var(--text-muted); font-size:13px;">Belum ada transaksi tercatat pada periode ini.</div>`;
+  } else {
+    const iconFor = t => t === 'tol' ? '🛣️' : t === 'bbm' ? '⛽' : t === 'saku' ? '💵' : t === 'makan' ? '🍽️' : t === 'admin' ? '💳' : '⚙️';
+    recentContainer.innerHTML = top5.map(tx => `
+      <div class="recent-item">
+        <div class="recent-icon" style="background:${tx.color}20; color:${tx.color}; border-color:${tx.color}40; box-shadow:0 0 12px ${tx.color}30;">
+          ${iconFor(tx.type)}
+        </div>
+        <div class="recent-info">
+          <div class="recent-title">${tx.desc}</div>
+          <div class="recent-sub">${escapeHtml(tx.tripName)}</div>
+        </div>
+        <div>
+          <div class="recent-amount">${formatRupiah(tx.amount)}</div>
+          <div class="recent-date">${formatDate(tx.rawDate)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+window.onTripDropdownChange = function(id) {
+  if(id) {
+    openTripDetail(id);
+    setTimeout(() => { $('#tripDropdown').value = ''; }, 500);
+  }
+};
+
+/* =====================================================
+   CHARTS
+===================================================== */
+function renderChart(tol, saku, makan, bbm, ops, admin) {
+  const ctx = document.getElementById('expenseChart').getContext('2d');
+  if (expenseChartInstance) expenseChartInstance.destroy();
+
+  const total = (tol + saku + makan + bbm + ops + (admin || 0));
+  if (total === 0) {
+    $('#chartCard').style.display = 'none';
+    return;
+  }
+  $('#chartCard').style.display = 'block';
+
+  const isMobile = window.innerWidth < 1024;
+  const isLight = document.body.classList.contains('light-mode');
+  const textColor = isLight ? '#475569' : '#94a3b8';
+
+  const labels = ['Biaya Tol', 'Uang Saku', 'Uang Makan', 'BBM', 'Operasional'];
+  const data = [tol, saku, makan, bbm, ops];
+  const colors = ['#22d3ee', '#34d399', '#fbbf24', '#f97316', '#a78bfa'];
+
+  if (admin && admin > 0) {
+    labels.push('Admin E-Toll');
+    data.push(admin);
+    colors.push('#f472b6');
+  }
+
+  expenseChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderWidth: 0,
+        hoverOffset: 6,
+        hoverBorderColor: 'rgba(255,255,255,0.3)',
+        hoverBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false, // Mematikan animasi Chart.js agar performa HP ringan
+      cutout: '72%',
+      layout: { padding: 10 },
+      plugins: {
+        legend: {
+          position: isMobile ? 'bottom' : 'right',
+          labels: {
+            boxWidth: 10, boxHeight: 10,
+            usePointStyle: true, pointStyle: 'circle',
+            padding: 12,
+            font: { size: 10, family: 'sans-serif', weight: '600' },
+            color: textColor
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(10,15,28,0.95)',
+          borderColor: 'rgba(34,211,238,0.4)',
+          borderWidth: 1, padding: 10, cornerRadius: 8,
+          titleFont: { size: 12, weight: '700' },
+          bodyFont: { size: 12, family: 'monospace' },
+          callbacks: { label: function(context) { return ' ' + formatRupiah(context.raw); } }
+        }
+      }
+    }
+  });
+}
+
+function formatCompactNumber(number) {
+  if (number >= 1000000000) return (number / 1000000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (number >= 1000000) return (number / 1000000).toFixed(1).replace(/\.0$/, '') + 'Jt';
+  if (number >= 1000) return (number / 1000).toFixed(0) + 'Rb';
+  return number.toString();
+}
+
+function renderTrendChart(monthlyTotals) {
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (trendChartInstance) trendChartInstance.destroy();
+
+  const sortedMonths = Object.keys(monthlyTotals).sort();
+  if (sortedMonths.length === 0) {
+    $('#trendChartCard').style.display = 'none';
+    return;
+  }
+  $('#trendChartCard').style.display = 'block';
+
+  const labels = sortedMonths.map(m => {
+    const [y, mm] = m.split('-');
+    return `${getMonthName(parseInt(mm))} ${y}`;
+  });
+  const data = sortedMonths.map(m => monthlyTotals[m]);
+
+  const isLight = document.body.classList.contains('light-mode');
+  const textColor = isLight ? '#475569' : '#94a3b8';
+  const gridColor = isLight ? 'rgba(15,23,42,0.08)' : 'rgba(255,255,255,0.07)';
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+  gradient.addColorStop(0, 'rgba(34,211,238,0.35)');
+  gradient.addColorStop(1, 'rgba(34,211,238,0.01)');
+
+  trendChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Total Pengeluaran',
+        data,
+        borderColor: '#22d3ee',
+        backgroundColor: gradient,
+        borderWidth: 2.5,
+        pointBackgroundColor: '#22d3ee',
+        pointBorderColor: '#0a0f1c',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: '#67e8f9',
+        fill: true, tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false, // Mematikan animasi Chart.js agar performa HP ringan
+      layout: { padding: { right: 10, left: 0, top: 10 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(10,15,28,0.95)',
+          borderColor: 'rgba(34,211,238,0.4)',
+          borderWidth: 1, padding: 10, cornerRadius: 8,
+          titleFont: { size: 12, weight: '700' },
+          bodyFont: { size: 12, family: 'monospace' },
+          callbacks: { label: function(context) { return ' ' + formatRupiah(context.raw); } }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: textColor, maxRotation: 45, minRotation: 0, font: { size: 9 } },
+          grid: { display: false },
+          border: { color: gridColor }
+        },
+        y: {
+          ticks: {
+            color: textColor,
+            font: { size: 9, family: 'monospace' },
+            callback: function(value) { return formatCompactNumber(value); }
+          },
+          grid: { color: gridColor },
+          border: { display: false }
+        }
+      }
+    }
+  });
+}
+
+/* =====================================================
+   VIEW NAVIGATION
+===================================================== */
+window.openTripDetail = function(id) {
+  state.activeTripId = id;
+  state.activeCategory = null;
+  state.searchQuery = '';
+  state.currentPage = 1;
+  $('#viewDashboard').classList.add('hidden');
+  $('#viewGlobal').classList.add('hidden');
+  $('#viewUserManagement').classList.add('hidden');
+  $('#viewTripDetail').classList.remove('hidden');
+  renderTripDetailHeader();
+  renderCategoryContent();
+  updateFab();
+  window.scrollTo(0,0);
+};
+
+window.closeTripDetail = function() {
+  state.activeTripId = null;
+  state.activeCategory = null;
+  $('#viewTripDetail').classList.add('hidden');
+  $('#viewDashboard').classList.remove('hidden');
+  renderDashboardList();
+  updateFab();
+  window.scrollTo(0,0);
+};
+
+window.openGlobalCategory = function() {
+  state.activeCategory = 'global';
+  state.searchQuery = '';
+  state.currentPage = 1;
+  $('#viewDashboard').classList.add('hidden');
+  $('#viewTripDetail').classList.add('hidden');
+  $('#viewUserManagement').classList.add('hidden');
+  $('#viewGlobal').classList.remove('hidden');
+  renderGlobalView();
+  updateFab();
+  window.scrollTo(0,0);
+};
+
+window.closeGlobalCategory = function() {
+  state.activeCategory = null;
+  $('#viewGlobal').classList.add('hidden');
+  $('#viewDashboard').classList.remove('hidden');
+  renderDashboardList();
+  updateFab();
+  window.scrollTo(0,0);
+};
+
+window.openUserManagement = function() {
+  if (state.currentUser.Role !== 'Admin') return showToast('Akses ditolak', 'error');
+  $('#viewDashboard').classList.add('hidden');
+  $('#viewTripDetail').classList.add('hidden');
+  $('#viewGlobal').classList.add('hidden');
+  $('#viewUserManagement').classList.remove('hidden');
+  renderUserList();
+  updateFab();
+  window.scrollTo(0,0);
+};
+
+window.closeUserManagement = function() {
+  $('#viewUserManagement').classList.add('hidden');
+  $('#viewDashboard').classList.remove('hidden');
+  renderDashboardList();
+  updateFab();
+  window.scrollTo(0,0);
+};
+
+/* =====================================================
+   USER MANAGEMENT
+===================================================== */
+function renderUserList() {
+  const container = $('#userListContainer');
+  if (!state.data.users || state.data.users.length === 0) {
+    container.innerHTML = `<div class="empty-tab">Tidak ada data user.</div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Username</th><th>Nama Lengkap</th><th>Role</th><th>Aksi</th></tr></thead>
+      <tbody>${state.data.users.map(u => `
+        <tr>
+          <td data-label="Username" style="font-weight:600;">${escapeHtml(u.Username)}</td>
+          <td data-label="Nama">${escapeHtml(u.NamaLengkap)}</td>
+          <td data-label="Role"><span class="badge" style="background:${u.Role==='Admin'?'rgba(248,113,113,0.15)':'rgba(34,211,238,0.15)'}; color:${u.Role==='Admin'?'#f87171':'#22d3ee'}; border-color:${u.Role==='Admin'?'rgba(248,113,113,0.3)':'rgba(34,211,238,0.3)'};">${escapeHtml(u.Role)}</span></td>
+          <td class="actions-cell">
+            <button class="btn-icon" onclick="openUserForm('${u.ID}')">✏️</button>
+            ${u.ID !== state.currentUser.ID ? `<button class="btn-icon" onclick="deleteUser('${u.ID}')">🗑️</button>` : ''}
+          </td>
+        </tr>
+      `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+window.openUserForm = function(id) {
+  const u = id ? state.data.users.find(x => x.ID === id) : {};
+  const isEdit = !!id;
+
+  const fields = `
+    <div class="field"><label>Username *</label><input name="Username" value="${escapeHtml(u.Username||'')}" required ${isEdit?'readonly':''}></div>
+    <div class="field"><label>Nama Lengkap *</label><input name="NamaLengkap" value="${escapeHtml(u.NamaLengkap||'')}" required></div>
+    <div class="field"><label>Role *</label>
+      <select name="Role">
+        <option value="User" ${u.Role==='User'?'selected':''}>User</option>
+        <option value="Admin" ${u.Role==='Admin'?'selected':''}>Admin</option>
+      </select>
+    </div>
+    <div class="field"><label>Password ${isEdit?'(Kosongkan jika tidak diubah)':''} ${!isEdit?'*':''}</label><input type="text" name="Password" value="" ${!isEdit?'required':''} placeholder="Masukkan password"></div>
+  `;
+  openModal(isEdit ? 'Edit User' : 'Tambah User Baru', fields, 'user', u);
+};
+
+window.deleteUser = async function(id) {
+  const u = state.data.users.find(x => x.ID === id);
+  if (!u) return showToast('User tidak ditemukan', 'error');
+
+  const confirmed = await showConfirm('Hapus User', `Yakin ingin menghapus user "${u.Username}"?`, '👤');
+  if (!confirmed) return;
+
+  showLoading();
+  api('deleteRecord', { sheetName: 'Users', id })
+    .then(res => {
+      if(res.ok) { showToast('User dihapus', 'warning'); loadData(true); }
+      else showToast(res.error, 'error');
+    })
+    .catch(() => showToast('Gagal menghapus user', 'error'))
+    .finally(() => hideLoading());
+};
+
+window.openProfileModal = function() {
+  const u = state.currentUser;
+  const fields = `
+    <div class="field"><label>Username</label><input value="${escapeHtml(u.Username)}" readonly></div>
+    <div class="field"><label>Nama Lengkap *</label><input name="NamaLengkap" value="${escapeHtml(u.NamaLengkap)}" required></div>
+    <div class="field"><label>Password Baru (Opsional)</label><input type="password" name="Password" placeholder="Kosongkan jika tidak diubah"></div>
+  `;
+  openModal('Profil Saya', fields, 'profile', u);
+};
+
+/* =====================================================
+   TRIP DETAIL HEADER
+===================================================== */
+function generatePhotoCell(fotoUrl) {
+  if(!fotoUrl) return `<span style="font-size:11px;color:var(--text-faint)">-</span>`;
+
+  let urls = [];
+  try {
+    urls = JSON.parse(fotoUrl);
+    if (!Array.isArray(urls)) urls = [fotoUrl];
+  } catch(e) {
+    urls = [fotoUrl];
+  }
+
+  if (urls.length === 0) return '-';
+
+  return urls.map((u, i) => `
+    <a href="${escapeHtml(u)}" target="_blank" style="display:inline-block; margin-right:4px; margin-bottom:4px; padding:4px 8px; background:var(--neon-cyan-soft); color:var(--neon-cyan); border:1px solid rgba(34,211,238,0.25); border-radius:4px; font-size:9px; font-weight:700; text-decoration:none; font-family:monospace;">📷 ${i+1}</a>
+  `).join('');
+}
+
+function renderTripDetailHeader() {
+  const p = state.data.perjalanan.find(x => x.ID === state.activeTripId);
+  if(!p) return;
+
+  $('#printSubtitle').textContent = `${p.NamaPegawai} - Tujuan: ${p.Tujuan} (${formatDate(p.TglBerangkat)} s/d ${formatDate(p.TglKembali)})`;
+
+  $('#tripDetailHeader').innerHTML = `
+    <div class="trip-detail-title">${escapeHtml(p.NamaPegawai)}</div>
+    <div class="trip-detail-sub">📍 ${escapeHtml(p.Tujuan)}</div>
+    <div style="font-size:11px; color:var(--text-secondary); display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; font-family:'JetBrains Mono',monospace;">
+      <span style="display:inline-flex; align-items:center; gap:4px;">📅 ${formatDate(p.TglBerangkat)} s/d ${formatDate(p.TglKembali)}</span>
+      <span style="display:inline-flex; align-items:center; gap:4px;">🚗 ${escapeHtml(p.Kendaraan||'-')}</span>
+      <span style="display:inline-flex; align-items:center; gap:4px; color:var(--neon-emerald); font-weight:700;">💵 Panjar: ${formatRupiah(p.UangPanjar)}</span>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap: wrap;" class="no-print">
+      <button class="btn-icon" style="width:auto; padding:0 12px; font-size:11px; font-weight:600;" onclick="openFormPerjalanan('${p.ID}')">✏️ Edit</button>
+      <button class="btn-icon" style="width:auto; padding:0 12px; font-size:11px; font-weight:600; color:var(--neon-cyan);" onclick="duplicateTrip('${p.ID}')">📄 Salin</button>
+      <button class="btn-icon" style="width:auto; padding:0 12px; font-size:11px; font-weight:600; color:var(--danger);" onclick="confirmDelete('${SHEET.PERJALANAN}','${p.ID}','perjalanan ini')">🗑️ Hapus</button>
+    </div>
+  `;
+}
+
+window.openCategory = function(cat) {
+  state.activeCategory = cat;
+  state.searchQuery = '';
+  state.currentPage = 1;
+  renderCategoryContent();
+  updateFab();
+};
+
+function updateFab(){
+  const fab = $('#fab');
+  if (!$('#viewDashboard').classList.contains('hidden')) {
+    fab.classList.remove('hidden'); fab.title = 'Tambah Perjalanan Baru';
+  } else if (!$('#viewTripDetail').classList.contains('hidden')) {
+    if (state.activeCategory && !['rekap', 'lpj'].includes(state.activeCategory)) {
+      fab.classList.remove('hidden'); fab.title = 'Tambah ' + labelFor(state.activeCategory);
+    } else { fab.classList.add('hidden'); }
+  } else { fab.classList.add('hidden'); }
+}
+
+/* =====================================================
+   SEARCH & PAGINATION
+===================================================== */
+window.handleSearch = function(val) {
+    state.searchQuery = val.toLowerCase();
+    state.currentPage = 1;
+    if (state.activeCategory === 'global') {
+        $('#globalDataContainer').innerHTML = renderGlobalDataList();
+    } else {
+        renderCategoryContent();
+    }
+};
+
+window.changePage = function(page) {
+    state.currentPage = page;
+    if (state.activeCategory === 'global') {
+        $('#globalDataContainer').innerHTML = renderGlobalDataList();
+    } else {
+        renderCategoryContent();
+    }
+};
+
+function renderPagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / state.itemsPerPage);
+    if (totalPages <= 1) return '';
+
+    let html = `<div class="pagination no-print">`;
+    html += `<button class="page-btn" ${state.currentPage === 1 ? 'disabled' : ''} onclick="changePage(${state.currentPage - 1})">Prev</button>`;
+
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= state.currentPage - 2 && i <= state.currentPage + 2)) {
+            html += `<button class="page-btn ${i === state.currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+        } else if (i === state.currentPage - 3 || i === state.currentPage + 3) {
+            html += `<span style="padding: 6px; color:var(--text-faint);">...</span>`;
+        }
+    }
+    html += `<button class="page-btn" ${state.currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${state.currentPage + 1})">Next</button>`;
+    html += `</div>`;
+    return html;
+}
+
+/* =====================================================
+   CATEGORY CONTENT
+===================================================== */
+function renderCategoryContent(){
+  const c = $('#categoryContent');
+  if (!state.activeCategory) { c.innerHTML = ''; return; }
+
+  const cat = state.activeCategory;
+  let contentHtml = '';
+
+  if (cat === 'rekap') {
+    contentHtml = renderRekap();
+  } else if (cat === 'lpj') {
+    contentHtml = renderLPJ();
+  } else {
+    let rows = dataForTab(cat).filter(x => x.IDPerjalanan === state.activeTripId);
+
+    let totalKategori = 0;
+    if (cat === 'saku') {
+      totalKategori = rows.reduce((sum, r) => sum + toNumber(r.Total), 0);
+    } else {
+      totalKategori = rows.reduce((sum, r) => sum + toNumber(r.Nominal), 0);
+    }
+
+    if (state.searchQuery) {
+        rows = rows.filter(r => {
+            const str = JSON.stringify(r).toLowerCase();
+            return str.includes(state.searchQuery);
+        });
+    }
+
+    const totalItems = rows.length;
+    const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+    const paginatedRows = rows.slice(startIndex, startIndex + state.itemsPerPage);
+
+    if (rows.length === 0) {
+      contentHtml = `<div class="empty-tab">Belum ada data <b>${labelFor(cat)}</b> atau data tidak ditemukan.<br>Klik tombol <b>+</b> di kanan bawah untuk menambah.</div>`;
+    } else {
+      contentHtml = `
+        <div style="background:linear-gradient(135deg, rgba(34,211,238,0.10), rgba(167,139,250,0.06)); backdrop-filter:blur(12px); padding:12px 16px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid rgba(34,211,238,0.3); box-shadow:0 0 20px rgba(34,211,238,0.08);">
+          <span style="font-size:10px; font-weight:700; color:var(--neon-cyan); font-family:'JetBrains Mono',monospace; letter-spacing:1px;">TOTAL ${labelFor(cat).toUpperCase()}</span>
+          <strong style="font-size:15px; font-weight:800; color:var(--neon-cyan); font-family:'JetBrains Mono',monospace; text-shadow:0 0 12px var(--neon-cyan-glow);">${formatRupiah(totalKategori)}</strong>
+        </div>
+        <div class="table-toolbar no-print">
+            <input type="text" class="search-input" placeholder="Cari data..." value="${escapeHtml(state.searchQuery)}" oninput="handleSearch(this.value)">
+        </div>
+        ${renderDataTable(cat, paginatedRows)}
+        ${renderPagination(totalItems)}
+      `;
+    }
+  }
+
+  c.innerHTML = `
+    <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+      <h3 style="font-size:12px; color:var(--text-secondary); font-family:'JetBrains Mono',monospace; letter-spacing:1px; text-transform:uppercase; font-weight:700;">DAFTAR ${labelFor(cat).toUpperCase()}</h3>
+      <div style="display:flex; gap:4px; flex-wrap:wrap;">
+        ${!['rekap', 'lpj'].includes(cat) ? `
+          <button class="btn-icon" style="width:auto; padding:0 10px; font-size:10px; font-weight:600; height:28px;" onclick="downloadCSV('${cat}')" title="Download Excel">⬇️ Excel</button>
+          <button class="btn-icon" style="width:auto; padding:0 10px; font-size:10px; font-weight:600; height:28px;" onclick="printReport()" title="Cetak PDF">🖨️ Cetak</button>
+        ` : `
+          <button class="btn-icon" style="width:auto; padding:0 10px; font-size:10px; font-weight:600; height:28px;" onclick="printReport()" title="Cetak PDF">🖨️ Cetak</button>
+        `}
+        <button class="btn-icon" style="width:28px; height:28px; font-size:10px; font-weight:600;" onclick="state.activeCategory=null; renderCategoryContent(); updateFab();">✕</button>
+      </div>
+    </div>
+    ${contentHtml}
+  `;
+}
+
+/* =====================================================
+   LPJ — REKONSILIASI KAS & E-TOLL
+===================================================== */
+function renderLPJ() {
+  const p = state.data.perjalanan.find(x => x.ID === state.activeTripId);
+  if(!p) return '';
+
+  const t = getTripTotals(state.activeTripId);
+
+  const panjar = toNumber(p.UangPanjar);
+  const etolAwal = toNumber(p.ETolAwal);
+  const etolTopUp = toNumber(p.ETolTopUp);
+  const etolAdmin = toNumber(p.ETolAdmin);
+
+  const totalPengeluaranTunai = t.saku + t.makan + t.bbm + t.ops + etolTopUp;
+  const sisaPanjarSeharusnya = panjar - totalPengeluaranTunai;
+
+  const sisaUangReal = toNumber(p.SisaUangReal);
+  const selisihPanjar = sisaUangReal - sisaPanjarSeharusnya;
+
+  const etolPemakaian = t.tol;
+  const etolMasuk = etolTopUp - etolAdmin;
+  const etolSeharusnya = etolAwal + etolMasuk - etolPemakaian;
+
+  const etolAkhir = toNumber(p.ETolAkhir);
+  const etolSelisih = etolAkhir - etolSeharusnya;
+
+  return `
+    <div class="lpj-container" id="lpjContainer" style="background:var(--glass-fill); backdrop-filter:blur(16px); padding:20px; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--glass-border);">
+      <div style="text-align:center; margin-bottom:18px; border-bottom:2px solid var(--neon-cyan); padding-bottom:12px;">
+        <h2 style="font-size:16px; font-weight:800; color:var(--neon-cyan); letter-spacing:1px; text-shadow:0 0 16px var(--neon-cyan-glow);">LAPORAN PERTANGGUNGJAWABAN</h2>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Perjalanan Dinas - ${escapeHtml(p.NamaPegawai)}</p>
+      </div>
+
+      <!-- BAGIAN 1: RINGKASAN BIAYA -->
+      <h3 style="font-size:10px; font-weight:700; background:rgba(34,211,238,0.10); color:var(--neon-cyan); padding:8px 12px; border-radius:6px; margin-bottom:10px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; border:1px solid rgba(34,211,238,0.2);">1. RINGKASAN TOTAL BIAYA PERJALANAN</h3>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:20px;">
+        <div class="lpj-row">
+          <span>Uang Saku</span>
+          <strong>${formatRupiah(t.saku)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Uang Makan</span>
+          <strong>${formatRupiah(t.makan)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Biaya BBM</span>
+          <strong>${formatRupiah(t.bbm)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Operasional</span>
+          <strong>${formatRupiah(t.ops)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Biaya Tol</span>
+          <strong>${formatRupiah(t.tol)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Biaya Admin E-Toll</span>
+          <strong>${formatRupiah(t.admin)}</strong>
+        </div>
+        
+        <div class="lpj-total" style="background:rgba(34,211,238,0.1); border:1px solid rgba(34,211,238,0.3); margin-top:6px;">
+          <span style="font-weight:700; color:var(--text-primary);">TOTAL PENGELUARAN</span>
+          <strong style="color:var(--neon-cyan); font-size:15px; font-family:'JetBrains Mono',monospace; text-shadow:0 0 10px var(--neon-cyan-glow);">${formatRupiah(t.total)}</strong>
+        </div>
+      </div>
+
+      <!-- BAGIAN 2: REKONSILIASI KAS -->
+      <h3 style="font-size:10px; font-weight:700; background:rgba(167,139,250,0.10); color:var(--neon-purple); padding:8px 12px; border-radius:6px; margin-bottom:10px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; border:1px solid rgba(167,139,250,0.2);">2. REKONSILIASI KAS TUNAI</h3>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:20px;">
+        <div class="lpj-row">
+          <span>Uang Panjar Diterima</span>
+          <strong>${formatRupiah(panjar)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Pengeluaran Tunai (Saku + Makan + BBM + Ops)</span>
+          <strong style="color:var(--danger);">- ${formatRupiah(t.saku + t.makan + t.bbm + t.ops)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Top Up E-Toll (Tunai)</span>
+          <strong style="color:var(--danger);">- ${formatRupiah(etolTopUp)}</strong>
+        </div>
+        
+        <div class="lpj-total" style="background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); margin-top:4px;">
+          <span style="font-weight:700; color:var(--text-primary);">Sisa Kas Seharusnya</span>
+          <strong style="color:var(--neon-cyan); font-size:14px; font-family:'JetBrains Mono',monospace;">${formatRupiah(sisaPanjarSeharusnya)}</strong>
+        </div>
+
+        <div class="lpj-input-group">
+          <span>Uang Tunai Aktual (Di Tangan) *</span>
+          <input type="text" id="inputSisaUangReal" value="${sisaUangReal ? sisaUangReal.toLocaleString('id-ID') : ''}" oninput="formatRupiahInput(this); hitungSelisihLPJ();">
+        </div>
+        <div class="lpj-print-value" style="display:none; justify-content:space-between; font-size:13px; padding-bottom:8px;">
+          <span>Uang Tunai Aktual (Di Tangan)</span>
+          <strong>${formatRupiah(sisaUangReal)}</strong>
+        </div>
+
+        <div class="lpj-total" style="background:${Math.abs(selisihPanjar) < 1 ? 'rgba(52,211,153,0.10)' : 'rgba(248,113,113,0.10)'}; border: 1px solid ${Math.abs(selisihPanjar) < 1 ? 'rgba(52,211,153,0.4)' : 'rgba(248,113,113,0.4)'}; margin-top:4px;">
+          <span style="font-weight:700; color:var(--text-primary);">Selisih Kas</span>
+          <strong id="labelSelisihPanjar" style="color:${Math.abs(selisihPanjar) < 1 ? 'var(--neon-emerald)' : 'var(--danger)'}; font-size:14px; font-family:'JetBrains Mono',monospace;">${formatRupiah(selisihPanjar)}</strong>
+        </div>
+      </div>
+
+      <!-- BAGIAN 3: REKONSILIASI E-TOLL -->
+      <h3 style="font-size:10px; font-weight:700; background:rgba(251,191,36,0.10); color:var(--neon-amber); padding:8px 12px; border-radius:6px; margin-bottom:10px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; border:1px solid rgba(251,191,36,0.2);">3. REKONSILIASI SALDO E-TOLL</h3>
+
+      <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:20px;">
+        <div class="lpj-row">
+          <span>Saldo Awal E-Toll</span>
+          <strong>${formatRupiah(etolAwal)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Top Up E-Toll (Nominal)</span>
+          <strong style="color:var(--neon-emerald);">+ ${formatRupiah(etolTopUp)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Biaya Admin Top Up</span>
+          <strong style="color:var(--danger);">- ${formatRupiah(etolAdmin)}</strong>
+        </div>
+        <div class="lpj-row">
+          <span>Total Pemakaian Tol</span>
+          <strong style="color:var(--danger);">- ${formatRupiah(etolPemakaian)}</strong>
+        </div>
+        
+        <div class="lpj-total" style="background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); margin-top:4px;">
+          <span style="font-weight:700; color:var(--text-primary);">Saldo E-Toll Seharusnya</span>
+          <strong style="color:var(--neon-purple); font-size:14px; font-family:'JetBrains Mono',monospace;">${formatRupiah(etolSeharusnya)}</strong>
+        </div>
+
+        <div class="lpj-input-group">
+          <span>Saldo E-Toll Aktual *</span>
+          <input type="text" id="inputETolAkhir" value="${etolAkhir ? etolAkhir.toLocaleString('id-ID') : ''}" oninput="formatRupiahInput(this); hitungSelisihLPJ();">
+        </div>
+        <div class="lpj-print-value" style="display:none; justify-content:space-between; font-size:13px; padding-bottom:8px;">
+          <span>Saldo E-Toll Aktual</span>
+          <strong>${formatRupiah(etolAkhir)}</strong>
+        </div>
+
+        <div class="lpj-total" style="background:${Math.abs(etolSelisih) < 1 ? 'rgba(52,211,153,0.10)' : 'rgba(248,113,113,0.10)'}; border: 1px solid ${Math.abs(etolSelisih) < 1 ? 'rgba(52,211,153,0.4)' : 'rgba(248,113,113,0.4)'}; margin-top:4px;">
+          <span style="font-weight:700; color:var(--text-primary);">Selisih E-Toll</span>
+          <strong id="labelSelisihETol" style="color:${Math.abs(etolSelisih) < 1 ? 'var(--neon-emerald)' : 'var(--danger)'}; font-size:14px; font-family:'JetBrains Mono',monospace;">${formatRupiah(etolSelisih)}</strong>
+        </div>
+      </div>
+
+      <div class="no-print" style="margin-top:20px; display:flex; gap:8px;">
+        <button class="btn btn-primary" onclick="simpanLPJ(event)" style="flex:1; padding:12px; font-size:12px; border-radius:8px;">💾 Simpan</button>
+        <button class="btn btn-secondary" onclick="downloadLPJPDF()" style="flex:1; padding:12px; font-size:12px; border-radius:8px; background:linear-gradient(135deg, #f472b6, #ec4899); color:#fff; border:none; box-shadow:0 6px 20px rgba(244,114,182,0.4);">📄 Unduh PDF</button>
+      </div>
+
+      <h3 style="font-size:10px; font-weight:700; background:rgba(52,211,153,0.10); color:var(--neon-emerald); padding:8px 12px; border-radius:6px; margin-top:20px; margin-bottom:10px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; border:1px solid rgba(52,211,153,0.2);">4. KESIMPULAN</h3>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); padding:16px; border-radius:10px;">
+        <p style="font-size:12px; line-height:1.5; color:var(--text-secondary);">
+          Sisa uang tunai yang <strong style="color:var(--text-primary);">seharusnya</strong> disetorkan kembali ke kasir/bendahara adalah sebesar:
+        </p>
+        <div style="text-align:center; margin:14px 0; padding:14px; background:linear-gradient(135deg, rgba(34,211,238,0.10), rgba(167,139,250,0.10)); border-radius:10px; border:1px solid rgba(34,211,238,0.35);">
+          <span style="font-size:9px; color:var(--neon-cyan); text-transform:uppercase; letter-spacing:1.5px; font-family:'JetBrains Mono',monospace; font-weight:700;">Sisa Kas (Wajib Kembali)</span>
+          <div style="font-size:22px; font-weight:800; color:var(--neon-cyan); margin-top:4px; font-family:'JetBrains Mono',monospace; text-shadow:0 0 20px var(--neon-cyan-glow);">${formatRupiah(sisaPanjarSeharusnya)}</div>
+        </div>
+
+        ${Math.abs(etolSelisih) >= 1 ? `
+          <div style="background:rgba(248,113,113,0.08); border-left:3px solid var(--danger); padding:10px 12px; border-radius:6px; margin-top:10px;">
+            <p style="font-size:11px; color:var(--danger); font-weight:600;">⚠️ Catatan: Terdapat selisih saldo E-Toll sebesar ${formatRupiah(etolSelisih)}.</p>
+          </div>
+        ` : `
+          <div style="background:rgba(52,211,153,0.08); border-left:3px solid var(--neon-emerald); padding:10px 12px; border-radius:6px; margin-top:10px;">
+            <p style="font-size:11px; color:var(--neon-emerald); font-weight:600;">✅ Saldo E-Toll cocok (Balance).</p>
+          </div>
+        `}
+
+        ${Math.abs(selisihPanjar) >= 1 ? `
+          <div style="background:rgba(248,113,113,0.08); border-left:3px solid var(--danger); padding:10px 12px; border-radius:6px; margin-top:10px;">
+            <p style="font-size:11px; color:var(--danger); font-weight:600;">⚠️ Catatan: Terdapat selisih kas tunai sebesar ${formatRupiah(selisihPanjar)}.</p>
+          </div>
+        ` : `
+          <div style="background:rgba(52,211,153,0.08); border-left:3px solid var(--neon-emerald); padding:10px 12px; border-radius:6px; margin-top:10px;">
+            <p style="font-size:11px; color:var(--neon-emerald); font-weight:600;">✅ Kas tunai cocok (Balance).</p>
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+window.hitungSelisihLPJ = function() {
+  const p = state.data.perjalanan.find(x => x.ID === state.activeTripId);
+  if(!p) return;
+  const t = getTripTotals(state.activeTripId);
+
+  const panjar = toNumber(p.UangPanjar);
+  const etolTopUp = toNumber(p.ETolTopUp);
+  const etolAdmin = toNumber(p.ETolAdmin);
+
+  const totalPengeluaranTunai = t.saku + t.makan + t.bbm + t.ops + etolTopUp;
+  const sisaPanjarSeharusnya = panjar - totalPengeluaranTunai;
+
+  const sisaUangReal = cleanNumberString(document.getElementById('inputSisaUangReal').value);
+  const selisihPanjar = sisaUangReal - sisaPanjarSeharusnya;
+
+  const elPanjar = document.getElementById('labelSelisihPanjar');
+  if (elPanjar) {
+    elPanjar.textContent = formatRupiah(selisihPanjar);
+    elPanjar.style.color = Math.abs(selisihPanjar) < 1 ? 'var(--neon-emerald)' : 'var(--danger)';
+    elPanjar.parentElement.style.background = Math.abs(selisihPanjar) < 1 ? 'rgba(52,211,153,0.10)' : 'rgba(248,113,113,0.10)';
+    elPanjar.parentElement.style.borderColor = Math.abs(selisihPanjar) < 1 ? 'rgba(52,211,153,0.4)' : 'rgba(248,113,113,0.4)';
+  }
+
+  const etolAwal = toNumber(p.ETolAwal);
+  const etolPemakaian = t.tol;
+  const etolMasuk = etolTopUp - etolAdmin;
+  const etolSeharusnya = etolAwal + etolMasuk - etolPemakaian;
+
+  const etolAkhir = cleanNumberString(document.getElementById('inputETolAkhir').value);
+  const etolSelisih = etolAkhir - etolSeharusnya;
+
+  const elETol = document.getElementById('labelSelisihETol');
+  if (elETol) {
+    elETol.textContent = formatRupiah(etolSelisih);
+    elETol.style.color = Math.abs(etolSelisih) < 1 ? 'var(--neon-emerald)' : 'var(--danger)';
+    elETol.parentElement.style.background = Math.abs(etolSelisih) < 1 ? 'rgba(52,211,153,0.10)' : 'rgba(248,113,113,0.10)';
+    elETol.parentElement.style.borderColor = Math.abs(etolSelisih) < 1 ? 'rgba(52,211,153,0.4)' : 'rgba(248,113,113,0.4)';
+  }
+};
+
+window.simpanLPJ = async function(ev) {
+  const p = state.data.perjalanan.find(x => x.ID === state.activeTripId);
+  if(!p) return;
+
+  const sisaUangReal = cleanNumberString(document.getElementById('inputSisaUangReal').value);
+  const etolAkhir = cleanNumberString(document.getElementById('inputETolAkhir').value);
+
+  const data = {
+    ID: p.ID,
+    SisaUangReal: sisaUangReal,
+    ETolAkhir: etolAkhir
+  };
+
+  const btn = (ev && (ev.currentTarget || ev.target)) || document.activeElement;
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Menyimpan...';
+  showLoading();
+
+  try {
+    const res = await api('saveRecord', { sheetName: SHEET.PERJALANAN, data });
+
+    if(!res.ok){ throw new Error(res.error || 'Gagal menyimpan'); }
+
+    showToast('✅ Data LPJ berhasil disimpan','success');
+    loadData(true);
+
+  } catch(err) {
+    showToast('Gagal menyimpan: '+err.message,'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    hideLoading();
+  }
+};
+
+window.downloadLPJPDF = function() {
+    const element = document.getElementById('lpjContainer');
+    const opt = {
+      margin:       0.5,
+      filename:     `LPJ_${state.activeTripId}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    const btnContainer = element.querySelector('.no-print');
+    if(btnContainer) btnContainer.style.display = 'none';
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        if(btnContainer) btnContainer.style.display = 'flex';
+    });
+};
+
+/* =====================================================
+   DATA TABLES
+===================================================== */
+function renderDataTable(category, rows){
+  if (category === 'tol') {
+    return `
+      <table class="data-table">
+        <thead><tr><th>Tanggal</th><th>Rute</th><th>Nominal</th><th>Foto</th><th></th></tr></thead>
+        <tbody>${rows.map(r=>`
+          <tr>
+            <td data-label="Tanggal">${formatDate(r.Tanggal)}</td>
+            <td data-label="Rute">${escapeHtml(r.GerbangMasuk)} → ${escapeHtml(r.GerbangKeluar)}<br><small style="color:var(--text-muted)">${escapeHtml(r.Golongan||'-')}</small></td>
+            <td data-label="Nominal" class="amount">${formatRupiah(r.Nominal)}</td>
+            <td data-label="Foto">${generatePhotoCell(r.Foto)}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" onclick="openFormTol('${r.ID}')">✏️</button>
+              <button class="btn-icon" onclick="confirmDelete('${SHEET.TOL}','${r.ID}','tol ini')">🗑️</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } else if (category === 'bbm') {
+    return `
+      <table class="data-table">
+        <thead><tr><th>Tanggal</th><th>Uraian</th><th>Nominal</th><th>Foto</th><th></th></tr></thead>
+        <tbody>${rows.map(r=>`
+          <tr>
+            <td data-label="Tanggal">${formatDate(r.Tanggal)}</td>
+            <td data-label="Uraian">${escapeHtml(r.Uraian)}</td>
+            <td data-label="Nominal" class="amount">${formatRupiah(r.Nominal)}</td>
+            <td data-label="Foto">${generatePhotoCell(r.Foto)}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" onclick="openFormBbm('${r.ID}')">✏️</button>
+              <button class="btn-icon" onclick="confirmDelete('${SHEET.BBM}','${r.ID}','BBM ini')">🗑️</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } else if (category === 'saku') {
+    return `
+      <table class="data-table">
+        <thead><tr><th>Tanggal</th><th>Uraian</th><th>Total</th><th>Foto</th><th></th></tr></thead>
+        <tbody>${rows.map(r=>`
+          <tr>
+            <td data-label="Tanggal">${formatDate(r.Tanggal)}</td>
+            <td data-label="Uraian">${escapeHtml(r.Uraian)}<br><small style="color:var(--text-muted)">${r.Jumlah} ${escapeHtml(r.Satuan)} × ${formatRupiah(r.Tarif)}</small></td>
+            <td data-label="Total" class="amount">${formatRupiah(r.Total)}</td>
+            <td data-label="Foto">${generatePhotoCell(r.Foto)}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" onclick="openFormSaku('${r.ID}')">✏️</button>
+              <button class="btn-icon" onclick="confirmDelete('${SHEET.SAKU}','${r.ID}','saku ini')">🗑️</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } else if (category === 'makan') {
+    return `
+      <table class="data-table">
+        <thead><tr><th>Tanggal</th><th>Uraian</th><th>Nominal</th><th>Foto</th><th></th></tr></thead>
+        <tbody>${rows.map(r=>`
+          <tr>
+            <td data-label="Tanggal">${formatDate(r.Tanggal)}</td>
+            <td data-label="Uraian">${escapeHtml(r.Uraian)}<br><small style="color:var(--text-muted)">${escapeHtml(r.Waktu||'-')}</small></td>
+            <td data-label="Nominal" class="amount">${formatRupiah(r.Nominal)}</td>
+            <td data-label="Foto">${generatePhotoCell(r.Foto)}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" onclick="openFormMakan('${r.ID}')">✏️</button>
+              <button class="btn-icon" onclick="confirmDelete('${SHEET.MAKAN}','${r.ID}','makan ini')">🗑️</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } else if (category === 'operasional') {
+    return `
+      <table class="data-table">
+        <thead><tr><th>Tanggal</th><th>Kategori</th><th>Nominal</th><th>Foto</th><th></th></tr></thead>
+        <tbody>${rows.map(r=>`
+          <tr>
+            <td data-label="Tanggal">${formatDate(r.Tanggal)}</td>
+            <td data-label="Kategori"><span class="badge">${escapeHtml(r.Kategori||'-')}</span><br><small style="color:var(--text-muted)">${escapeHtml(r.Uraian)}</small></td>
+            <td data-label="Nominal" class="amount">${formatRupiah(r.Nominal)}</td>
+            <td data-label="Foto">${generatePhotoCell(r.Foto)}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" onclick="openFormOperasional('${r.ID}')">✏️</button>
+              <button class="btn-icon" onclick="confirmDelete('${SHEET.OPERASIONAL}','${r.ID}','operasional ini')">🗑️</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+  return '';
+}
+
+function renderRekap(){
+  const t = getTripTotals(state.activeTripId);
+  const c = n => dataForTab(n).filter(x=>x.IDPerjalanan === state.activeTripId).length;
+  return `
+    <div class="rekap-cards">
+      <div class="rekap-card tol"><span>🛣️ Biaya Tol</span><strong>${formatRupiah(t.tol)}</strong><small>${c('tol')} trx</small></div>
+      <div class="rekap-card saku"><span>💵 Uang Saku</span><strong>${formatRupiah(t.saku)}</strong><small>${c('saku')} trx</small></div>
+      <div class="rekap-card makan"><span>🍽️ Uang Makan</span><strong>${formatRupiah(t.makan)}</strong><small>${c('makan')} trx</small></div>
+      <div class="rekap-card bbm"><span>⛽ Biaya BBM</span><strong>${formatRupiah(t.bbm)}</strong><small>${c('bbm')} trx</small></div>
+      <div class="rekap-card ops"><span>⚙️ Operasional</span><strong>${formatRupiah(t.ops)}</strong><small>${c('operasional')} trx</small></div>
+      ${t.admin > 0 ? `<div class="rekap-card" style="grid-column:1/-1; border-top:3px solid #f472b6;"><span>💳 Biaya Admin E-Toll</span><strong>${formatRupiah(t.admin)}</strong></div>` : ''}
+      <div class="rekap-card total"><span>Total Keseluruhan</span><strong>${formatRupiah(t.total)}</strong></div>
+    </div>
+    <p style="font-size:10px; color:var(--text-faint); text-align:center; margin-top:-6px; font-family:'JetBrains Mono',monospace;">Total ini juga dipakai untuk Dashboard & Chart (termasuk Admin E-Toll)</p>
+  `;
+}
+
+/* =====================================================
+   GLOBAL VIEW
+===================================================== */
+window.handleGlobalFilter = function(key, val) {
+  state.globalFilters[key] = val;
+  state.currentPage = 1;
+  const container = $('#globalDataContainer');
+  if(container) container.innerHTML = renderGlobalDataList();
+};
+
+function renderGlobalView() {
+  const allTx = getAllTransactionsRaw();
+  const yearSet = new Set();
+  allTx.forEach(t => { if(t.rawDate) yearSet.add(t.rawDate.slice(0,4)); });
+  const years = Array.from(yearSet).sort().reverse();
+
+  $('#globalContent').innerHTML = `
+    <div class="filter-box no-print">
+      <div class="filter-grid">
+        <div class="filter-item">
+          <label>Perjalanan</label>
+          <select onchange="handleGlobalFilter('tripId', this.value)">
+            <option value="">Semua</option>
+            ${state.data.perjalanan.map(p => `<option value="${p.ID}" ${state.globalFilters.tripId === p.ID ? 'selected':''}>${escapeHtml(p.NamaPegawai)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Kategori</label>
+          <select onchange="handleGlobalFilter('category', this.value)">
+            <option value="">Semua</option>
+            <option value="tol" ${state.globalFilters.category === 'tol' ? 'selected':''}>Biaya Tol</option>
+            <option value="saku" ${state.globalFilters.category === 'saku' ? 'selected':''}>Uang Saku</option>
+            <option value="makan" ${state.globalFilters.category === 'makan' ? 'selected':''}>Uang Makan</option>
+            <option value="bbm" ${state.globalFilters.category === 'bbm' ? 'selected':''}>Biaya BBM</option>
+            <option value="operasional" ${state.globalFilters.category === 'operasional' ? 'selected':''}>Operasional</option>
+            <option value="admin" ${state.globalFilters.category === 'admin' ? 'selected':''}>Admin E-Toll</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Bulan</label>
+          <select onchange="handleGlobalFilter('month', this.value)">
+            <option value="">Semua</option>
+            ${[1,2,3,4,5,6,7,8,9,10,11,12].map(m => {
+              const mm = String(m).padStart(2,'0');
+              return `<option value="${mm}" ${state.globalFilters.month === mm ? 'selected':''}>${getMonthName(m)}</option>`;
+            }).join('')}
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Tahun</label>
+          <select onchange="handleGlobalFilter('year', this.value)">
+            <option value="">Semua</option>
+            ${years.map(y => `<option value="${y}" ${state.globalFilters.year === y ? 'selected':''}>${y}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="table-toolbar no-print">
+        <input type="text" class="search-input" placeholder="Cari transaksi..." value="${escapeHtml(state.searchQuery)}" oninput="handleSearch(this.value)">
+        <div style="display:flex; gap:6px;">
+            <button class="btn-icon" style="width:auto; padding:0 10px; font-size:10px; font-weight:600; height:32px;" onclick="downloadCSV('global')" title="Download Excel">⬇️ Excel</button>
+            <button class="btn-icon" style="width:auto; padding:0 10px; font-size:10px; font-weight:600; height:32px;" onclick="printReport()" title="Cetak PDF">🖨️ Cetak</button>
+        </div>
+    </div>
+    <div id="globalDataContainer">${renderGlobalDataList()}</div>
+  `;
+}
+
+function renderGlobalDataList() {
+  let allTx = getAllTransactionsRaw();
+  const f = state.globalFilters;
+
+  if (state.currentUser.Role !== 'Admin') {
+      const myName = state.currentUser.NamaLengkap.toLowerCase().trim();
+      const myTripIds = state.data.perjalanan.filter(p => String(p.NamaPegawai).toLowerCase().trim() === myName).map(p => p.ID);
+      allTx = allTx.filter(tx => myTripIds.includes(tx.tripId));
+  }
+
+  let filtered = allTx.filter(tx => {
+    if (f.tripId && tx.tripId !== f.tripId) return false;
+    if (f.category && tx.type !== f.category) return false;
+    if (f.year && (!tx.rawDate || !tx.rawDate.startsWith(f.year))) return false;
+    if (f.month && (!tx.rawDate || tx.rawDate.slice(5,7) !== f.month)) return false;
+    return true;
+  });
+
+  if (state.searchQuery) {
+      filtered = filtered.filter(tx => {
+          const str = `${tx.tripName} ${tx.typeLabel} ${tx.desc} ${tx.amount}`.toLowerCase();
+          return str.includes(state.searchQuery);
+      });
+  }
+
+  const totalAmount = filtered.reduce((sum, tx) => sum + tx.amount, 0);
+
+  let html = `
+    <div class="rekap-card total" style="margin-bottom:16px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <span style="font-size:9px; opacity:.9;">TOTAL (${filtered.length} DATA)</span>
+        <strong style="font-size:20px; margin-top:2px;">${formatRupiah(totalAmount)}</strong>
+      </div>
+    </div>
+  `;
+
+  if (filtered.length === 0) return html + `<div class="empty-tab">Tidak ada transaksi ditemukan.</div>`;
+
+  const totalItems = filtered.length;
+  const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+  const paginatedData = filtered.slice(startIndex, startIndex + state.itemsPerPage);
+
+  html += `
+    <table class="data-table">
+      <thead><tr><th>Tgl</th><th>Perjalanan</th><th>Keterangan</th><th>Nominal</th><th>Foto</th><th></th></tr></thead>
+      <tbody>${paginatedData.map(tx => `
+        <tr>
+          <td data-label="Tanggal">${tx.displayDate}</td>
+          <td data-label="Perjalanan" style="font-size:12px; font-weight:600;">${escapeHtml(tx.tripName)}</td>
+          <td data-label="Keterangan"><span class="badge" style="background:${tx.color}18; color:${tx.color}; margin-bottom:4px; border-color:${tx.color}40;">${escapeHtml(tx.typeLabel)}</span><br><small>${tx.desc}</small></td>
+          <td data-label="Nominal" class="amount">${formatRupiah(tx.amount)}</td>
+          <td data-label="Foto">${generatePhotoCell(tx.foto)}</td>
+          <td class="actions-cell">
+            <button class="btn-icon" onclick="${tx.editFn}">✏️</button>
+            ${!tx.isVirtual
+              ? `<button class="btn-icon" onclick="confirmDelete('${tx.sheet}','${tx.id}','transaksi ini')">🗑️</button>`
+              : `<span style="font-size:9px; color:var(--text-faint); font-family:monospace;">(via trip)</span>`}
+          </td>
+        </tr>
+      `).join('')}
+      </tbody>
+    </table>
+    ${renderPagination(totalItems)}
+  `;
+  return html;
+}
+
+/* =====================================================
+   CSV EXPORT
+===================================================== */
+window.downloadCSV = function(type) {
+  let data = [];
+  let filename = 'Laporan_';
+  const p = state.data.perjalanan.find(x => x.ID === state.activeTripId);
+  const pName = p ? p.NamaPegawai.replace(/[^a-z0-9]/gi, '_') : 'Global';
+
+  const escapeCSV = v => {
+    const s = (v == null ? '' : String(v));
+    if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  };
+
+  if (type === 'global') {
+    const allTx = getAllTransactionsRaw();
+    const f = state.globalFilters;
+    const filtered = allTx.filter(tx => {
+      if (f.tripId && tx.tripId !== f.tripId) return false;
+      if (f.category && tx.type !== f.category) return false;
+      if (f.year && (!tx.rawDate || !tx.rawDate.startsWith(f.year))) return false;
+      if (f.month && (!tx.rawDate || tx.rawDate.slice(5,7) !== f.month)) return false;
+      return true;
+    });
+    data.push(['Tanggal', 'Nama Pegawai', 'Kategori', 'Keterangan', 'Nominal']);
+    filtered.forEach(tx => {
+      const cleanDesc = unescapeHtml(tx.desc).replace(/<[^>]+>/g, '');
+      data.push([tx.rawDate, tx.tripName, tx.typeLabel, cleanDesc, tx.amount]);
+    });
+    filename += 'Global_' + pName;
+  } else {
+    const rows = dataForTab(type).filter(x => x.IDPerjalanan === state.activeTripId);
+    if (type === 'tol') {
+      data.push(['Tanggal', 'Gerbang Masuk', 'Gerbang Keluar', 'Golongan', 'Nominal', 'Keterangan']);
+      rows.forEach(r => data.push([r.Tanggal, r.GerbangMasuk, r.GerbangKeluar, r.Golongan, toNumber(r.Nominal), r.Keterangan]));
+    } else if (type === 'bbm') {
+      data.push(['Tanggal', 'Uraian', 'Nominal', 'Keterangan']);
+      rows.forEach(r => data.push([r.Tanggal, r.Uraian, toNumber(r.Nominal), r.Keterangan]));
+    } else if (type === 'saku') {
+      data.push(['Tanggal', 'Uraian', 'Jumlah', 'Satuan', 'Tarif', 'Total', 'Keterangan']);
+      rows.forEach(r => data.push([r.Tanggal, r.Uraian, r.Jumlah, r.Satuan, toNumber(r.Tarif), toNumber(r.Total), r.Keterangan]));
+    } else if (type === 'makan') {
+      data.push(['Tanggal', 'Waktu', 'Uraian', 'Nominal', 'Keterangan']);
+      rows.forEach(r => data.push([r.Tanggal, r.Waktu, r.Uraian, toNumber(r.Nominal), r.Keterangan]));
+    } else if (type === 'operasional') {
+      data.push(['Tanggal', 'Kategori', 'Uraian', 'Nominal', 'Keterangan']);
+      rows.forEach(r => data.push([r.Tanggal, r.Kategori, r.Uraian, toNumber(r.Nominal), r.Keterangan]));
+    }
+    filename += type.toUpperCase() + '_' + pName;
+  }
+
+  const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + data.map(row => row.map(escapeCSV).join(",")).join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", filename + ".csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('⬇️ File Excel (CSV) berhasil diunduh', 'success');
+};
+
+window.printReport = function() {
+  window.print();
+};
+
+/* =====================================================
+   PHOTO UPLOAD
+===================================================== */
+window.handlePhotoUpload = function(input) {
+  const files = Array.from(input.files);
+  if (files.length === 0) return;
+
+  const promises = files.map(file => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          let width = img.width;
+          let height = img.height;
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  Promise.all(promises).then(base64Array => {
+    let currentVal = document.getElementById('fotoBase64').value;
+    let arr = [];
+    try { arr = JSON.parse(currentVal); if(!Array.isArray(arr)) arr = []; } catch(e) { if(currentVal) arr = [currentVal]; }
+    arr = arr.concat(base64Array);
+    document.getElementById('fotoBase64').value = JSON.stringify(arr);
+    renderPhotoPreviews(arr);
+    input.value = '';
+  });
+};
+
+window.removePhoto = function(index) {
+  let arr = JSON.parse(document.getElementById('fotoBase64').value || '[]');
+  arr.splice(index, 1);
+  document.getElementById('fotoBase64').value = JSON.stringify(arr);
+  renderPhotoPreviews(arr);
+};
+
+function renderPhotoPreviews(arr) {
+  const container = document.getElementById('photoPreviewContainer');
+  const zone = document.getElementById('uploadZone');
+  if (!container || !zone) return;
+
+  const icon = zone.querySelector('.upload-icon');
+  const text = zone.querySelector('.upload-text');
+
+  if (arr.length > 0) {
+    container.style.display = 'flex';
+    container.innerHTML = arr.map((src, i) => `
+      <div class="photo-preview-item">
+        <img src="${escapeHtml(src)}">
+        <button type="button" class="btn-remove-photo" onclick="removePhoto(${i})">✕</button>
+      </div>
+    `).join('');
+    zone.style.padding = '12px';
+    zone.style.background = 'rgba(255,255,255,0.04)';
+    zone.style.border = '1px solid var(--glass-border)';
+    if (icon) icon.style.display = 'none';
+    if (text) { text.style.display = 'block'; text.textContent = 'Tambah Foto Lagi'; text.style.marginBottom = '8px'; text.style.fontSize = '10px'; }
+  } else {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    zone.style.padding = '18px';
+    zone.style.background = 'rgba(255,255,255,0.03)';
+    zone.style.border = '1px dashed var(--glass-border-strong)';
+    if (icon) icon.style.display = 'block';
+    if (text) { text.style.display = 'block'; text.textContent = 'Unggah Foto Bukti'; text.style.marginBottom = '10px'; text.style.fontSize = '11px'; }
+  }
+}
+
+function generatePhotoField(existingUrl) {
+  const inputsHtml = `
+    <div style="display:flex; gap:8px; margin-top:10px; width:100%;">
+      <button type="button" class="btn btn-primary" style="padding:10px; font-size:11px; flex:1;" onclick="openCameraModal()">📷 Kamera</button>
+      <button type="button" class="btn btn-secondary" style="padding:10px; font-size:11px; flex:1;" onclick="document.getElementById('fotoInputGallery').click()">🖼️ Galeri</button>
+    </div>
+    <input type="file" accept="image/*" multiple id="fotoInputGallery" onchange="handlePhotoUpload(this)" style="display:none;">
+  `;
+
+  return `
+    <div class="field">
+      <label>Foto Bukti (Bisa lebih dari 1)</label>
+      <input type="hidden" name="Foto" id="fotoBase64" value="${escapeHtml(existingUrl || '')}">
+      <div id="photoPreviewContainer" class="photo-preview-container"></div>
+      <div id="uploadZone" class="upload-zone">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <div class="upload-text">Unggah Foto Bukti</div>
+        ${inputsHtml}
+      </div>
+    </div>
+  `;
+}
+
+/* =====================================================
+   FORMS
+===================================================== */
+function formPerjalanan(r={}){
+  return `
+    <div class="field"><label>Nama Pegawai *</label><input name="NamaPegawai" value="${escapeHtml(r.NamaPegawai)}" required></div>
+    <div class="field"><label>NIP</label><input name="NIP" value="${escapeHtml(r.NIP)}"></div>
+    <div class="field"><label>Jabatan</label><input name="Jabatan" value="${escapeHtml(r.Jabatan)}"></div>
+    <div class="field"><label>Tujuan *</label><input name="Tujuan" value="${escapeHtml(r.Tujuan)}" required></div>
+    <div class="field"><label>Keperluan</label><textarea name="Keperluan" rows="2">${escapeHtml(r.Keperluan)}</textarea></div>
+    <div class="field"><label>Tgl Berangkat *</label><input type="date" name="TglBerangkat" id="tglBerangkat" value="${r.TglBerangkat||today()}" onchange="validateDates()" required></div>
+    <div class="field"><label>Tgl Kembali *</label><input type="date" name="TglKembali" id="tglKembali" value="${r.TglKembali||today()}" onchange="validateDates()" required></div>
+    <div class="field"><label>Kendaraan</label>
+      <select name="Kendaraan">${['Mobil Dinas','Mobil Pribadi','Motor','Pesawat','Kereta','Bus'].map(k=>`<option ${r.Kendaraan===k?'selected':''}>${k}</option>`).join('')}</select>
+    </div>
+    <div class="field"><label>No Polisi / No Tiket</label><input name="NoPolisi" value="${escapeHtml(r.NoPolisi)}"></div>
+    <div class="field"><label>Catatan</label><textarea name="Catatan" rows="2">${escapeHtml(r.Catatan)}</textarea></div>
+
+    <hr style="border:none; border-top:1px dashed var(--glass-border); margin:18px 0;">
+    <h4 style="font-size:10px; color:var(--neon-cyan); margin-bottom:12px; font-family:'JetBrains Mono',monospace; letter-spacing:1px;">MANAJEMEN UANG PANJAR & E-TOLL</h4>
+
+    <div class="field"><label>Uang Panjar / Uang Muka (Rp)</label><input type="text" name="UangPanjar" value="${toNumber(pick(r.UangPanjar,'0'))?toNumber(r.UangPanjar).toLocaleString('id-ID'):'0'}" inputmode="numeric" oninput="formatRupiahInput(this)" placeholder="Cth: 1.000.000"></div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+       <div class="field" style="margin-bottom:0;"><label>Saldo Awal E-Toll</label><input type="text" name="ETolAwal" value="${toNumber(pick(r.ETolAwal,'0'))?toNumber(r.ETolAwal).toLocaleString('id-ID'):'0'}" inputmode="numeric" oninput="formatRupiahInput(this)"></div>
+       <div class="field" style="margin-bottom:0;"><label>Top Up E-Toll (Tunai)</label><input type="text" name="ETolTopUp" value="${toNumber(pick(r.ETolTopUp,'0'))?toNumber(r.ETolTopUp).toLocaleString('id-ID'):'0'}" inputmode="numeric" oninput="formatRupiahInput(this)"></div>
+       <div class="field" style="margin-bottom:0; grid-column: 1 / -1;"><label>Biaya Admin Top Up (Potong Saldo)</label><input type="text" name="ETolAdmin" value="${toNumber(pick(r.ETolAdmin,'0'))?toNumber(r.ETolAdmin).toLocaleString('id-ID'):'0'}" inputmode="numeric" oninput="formatRupiahInput(this)"></div>
+    </div>
+  `;
+}
+
+window.validateDates = function() {
+  const start = document.getElementById('tglBerangkat');
+  const end = document.getElementById('tglKembali');
+  if (start && end) {
+    end.min = start.value;
+    if (end.value && end.value < start.value) {
+      end.value = start.value;
+      showToast('Tanggal kembali disesuaikan dengan tanggal berangkat', 'warning');
+    }
+  }
+};
+
+function formTol(r={}){
+  return `
+    <div class="field"><label>Tanggal *</label><input type="date" name="Tanggal" value="${r.Tanggal||today()}" required></div>
+    <div class="field"><label>Gerbang Masuk *</label><input name="GerbangMasuk" value="${escapeHtml(r.GerbangMasuk)}" required placeholder="Cth: Cileunyi"></div>
+    <div class="field"><label>Gerbang Keluar *</label><input name="GerbangKeluar" value="${escapeHtml(r.GerbangKeluar)}" required placeholder="Cth: Pasteur"></div>
+    <div class="field"><label>Golongan</label><select name="Golongan">${['Gol I','Gol II','Gol III','Gol IV','Gol V'].map(g=>`<option ${r.Golongan===g?'selected':''}>${g}</option>`).join('')}</select></div>
+    <div class="field"><label>Nominal (Rp) *</label><input type="text" name="Nominal" value="${toNumber(r.Nominal)?toNumber(r.Nominal).toLocaleString('id-ID'):''}" inputmode="numeric" oninput="formatRupiahInput(this)" required placeholder="Cth: 45.000"></div>
+    <div class="field"><label>Keterangan</label><textarea name="Keterangan" rows="2">${escapeHtml(r.Keterangan)}</textarea></div>
+    ${generatePhotoField(r.Foto)}
+  `;
+}
+
+function formBbm(r={}){
+  return `
+    <div class="field"><label>Tanggal *</label><input type="date" name="Tanggal" value="${r.Tanggal||today()}" required></div>
+    <div class="field"><label>Uraian *</label><input name="Uraian" value="${escapeHtml(r.Uraian)||'Isi BBM'}" required placeholder="Cth: Pertamax / Solar"></div>
+    <div class="field"><label>Nominal (Rp) *</label><input type="text" name="Nominal" value="${toNumber(r.Nominal)?toNumber(r.Nominal).toLocaleString('id-ID'):''}" inputmode="numeric" oninput="formatRupiahInput(this)" required placeholder="Cth: 350.000"></div>
+    <div class="field"><label>Keterangan</label><textarea name="Keterangan" rows="2">${escapeHtml(r.Keterangan)}</textarea></div>
+    ${generatePhotoField(r.Foto)}
+  `;
+}
+
+function formSaku(r={}){
+  const jumlah = pick(r.Jumlah, 1);
+  const tarif  = pick(r.Tarif, 150000);
+  const total  = pick(r.Total, (toNumber(jumlah) * toNumber(tarif)));
+  return `
+    <div class="field"><label>Tanggal *</label><input type="date" name="Tanggal" value="${r.Tanggal||today()}" required></div>
+    <div class="field"><label>Uraian *</label><input name="Uraian" value="${escapeHtml(r.Uraian)||'Uang Saku Harian'}" required></div>
+    <div class="field"><label>Jumlah *</label><input type="number" name="Jumlah" value="${jumlah}" min="1" oninput="hitungSaku()" required></div>
+    <div class="field"><label>Satuan</label><select name="Satuan">${['Hari','Orang','Kali'].map(s=>`<option ${r.Satuan===s?'selected':''}>${s}</option>`).join('')}</select></div>
+    <div class="field"><label>Tarif (Rp) *</label><input type="text" name="Tarif" value="${toNumber(tarif).toLocaleString('id-ID')}" oninput="formatRupiahInput(this); hitungSaku();" required></div>
+    <div class="field"><label>Total (Rp)</label><input type="text" name="Total" value="${toNumber(total).toLocaleString('id-ID')}" readonly></div>
+    <div class="field"><label>Keterangan</label><textarea name="Keterangan" rows="2">${escapeHtml(r.Keterangan)}</textarea></div>
+    ${generatePhotoField(r.Foto)}
+  `;
+}
+
+function formMakan(r={}){
+  return `
+    <div class="field"><label>Tanggal *</label><input type="date" name="Tanggal" value="${r.Tanggal||today()}" required></div>
+    <div class="field"><label>Waktu</label><select name="Waktu">${['Pagi','Siang','Malam','Snack'].map(w=>`<option ${r.Waktu===w?'selected':''}>${w}</option>`).join('')}</select></div>
+    <div class="field"><label>Uraian *</label><input name="Uraian" value="${escapeHtml(r.Uraian)||'Uang Makan'}" required></div>
+    <div class="field"><label>Nominal (Rp) *</label><input type="text" name="Nominal" value="${toNumber(r.Nominal)?toNumber(r.Nominal).toLocaleString('id-ID'):'50.000'}" inputmode="numeric" oninput="formatRupiahInput(this)" required></div>
+    <div class="field"><label>Keterangan</label><textarea name="Keterangan" rows="2">${escapeHtml(r.Keterangan)}</textarea></div>
+    ${generatePhotoField(r.Foto)}
+  `;
+}
+
+function formOperasional(r={}){
+  return `
+    <div class="field"><label>Tanggal *</label><input type="date" name="Tanggal" value="${r.Tanggal||today()}" required></div>
+    <div class="field"><label>Kategori *</label><select name="Kategori">${['Parkir','Hotel','Taksi/Ojek','ATK','Laundry','Konsumsi Rapat','Lain-lain'].map(k=>`<option ${r.Kategori===k?'selected':''}>${k}</option>`).join('')}</select></div>
+    <div class="field"><label>Uraian *</label><input name="Uraian" value="${escapeHtml(r.Uraian)}" required></div>
+    <div class="field"><label>Nominal (Rp) *</label><input type="text" name="Nominal" value="${toNumber(r.Nominal)?toNumber(r.Nominal).toLocaleString('id-ID'):''}" inputmode="numeric" oninput="formatRupiahInput(this)" required></div>
+    <div class="field"><label>Keterangan</label><textarea name="Keterangan" rows="2">${escapeHtml(r.Keterangan)}</textarea></div>
+    ${generatePhotoField(r.Foto)}
+  `;
+}
+
+window.hitungSaku = function(){
+  const f = document.getElementById('form');
+  if(!f.Jumlah || !f.Tarif || !f.Total) return;
+  const jml = Number(f.Jumlah.value)||0;
+  const trf = cleanNumberString(f.Tarif.value);
+  f.Total.value = (jml * trf).toLocaleString('id-ID');
+};
+
+function openFormPerjalanan(id){
+  const r = id ? state.data.perjalanan.find(x=>x.ID===id) : null;
+  openModal(!!r?'Edit Perjalanan':'Perjalanan Baru', formPerjalanan(r||{}), 'perjalanan', r);
+}
+function openFormTol(id){
+  const r = id ? state.data.tol.find(x=>x.ID===id) : null;
+  openModal(r?'Edit Biaya Tol':'Tambah Biaya Tol', formTol(r||{}), 'tol', r);
+  if(r && r.Foto) {
+    try { let arr = JSON.parse(r.Foto); if(Array.isArray(arr)) renderPhotoPreviews(arr); else renderPhotoPreviews([r.Foto]); } catch(e) { if(r.Foto) renderPhotoPreviews([r.Foto]); }
+  }
+}
+function openFormBbm(id){
+  const r = id ? state.data.bbm.find(x=>x.ID===id) : null;
+  openModal(r?'Edit Biaya BBM':'Tambah Biaya BBM', formBbm(r||{}), 'bbm', r);
+  if(r && r.Foto) {
+    try { let arr = JSON.parse(r.Foto); if(Array.isArray(arr)) renderPhotoPreviews(arr); else renderPhotoPreviews([r.Foto]); } catch(e) { if(r.Foto) renderPhotoPreviews([r.Foto]); }
+  }
+}
+function openFormSaku(id){
+  const r = id ? state.data.saku.find(x=>x.ID===id) : null;
+  openModal(r?'Edit Uang Saku':'Tambah Uang Saku', formSaku(r||{}), 'saku', r);
+  if(r && r.Foto) {
+    try { let arr = JSON.parse(r.Foto); if(Array.isArray(arr)) renderPhotoPreviews(arr); else renderPhotoPreviews([r.Foto]); } catch(e) { if(r.Foto) renderPhotoPreviews([r.Foto]); }
+  }
+}
+function openFormMakan(id){
+  const r = id ? state.data.makan.find(x=>x.ID===id) : null;
+  openModal(r?'Edit Uang Makan':'Tambah Uang Makan', formMakan(r||{}), 'makan', r);
+  if(r && r.Foto) {
+    try { let arr = JSON.parse(r.Foto); if(Array.isArray(arr)) renderPhotoPreviews(arr); else renderPhotoPreviews([r.Foto]); } catch(e) { if(r.Foto) renderPhotoPreviews([r.Foto]); }
+  }
+}
+function openFormOperasional(id){
+  const r = id ? state.data.operasional.find(x=>x.ID===id) : null;
+  openModal(r?'Edit Operasional':'Tambah Operasional', formOperasional(r||{}), 'operasional', r);
+  if(r && r.Foto) {
+    try { let arr = JSON.parse(r.Foto); if(Array.isArray(arr)) renderPhotoPreviews(arr); else renderPhotoPreviews([r.Foto]); } catch(e) { if(r.Foto) renderPhotoPreviews([r.Foto]); }
+  }
+}
+
+window.duplicateTrip = function(id) {
+    const r = state.data.perjalanan.find(x=>x.ID===id);
+    if(!r) return;
+
+    const newR = { ...r };
+    delete newR.ID;
+    newR.TglBerangkat = today();
+    newR.TglKembali = today();
+    newR.Catatan = 'Salinan dari perjalanan sebelumnya. ' + (r.Catatan || '');
+
+    openModal('Salin Perjalanan', formPerjalanan(newR), 'perjalanan', null);
+};
+
+/* =====================================================
+   SUBMIT FORM
+===================================================== */
+async function submitForm(){
+  const f = document.getElementById('form');
+  if(!f.checkValidity()){ f.reportValidity(); return; }
+
+  const data = {};
+  new FormData(f).forEach((v,k)=> data[k]=v );
+
+  ['Nominal','UangPanjar','ETolAwal','ETolTopUp','ETolAdmin','ETolAkhir','SisaUangReal','Tarif'].forEach(k=>{
+    if(data[k]!==undefined) data[k] = cleanNumberString(data[k]);
+  });
+
+  ['Jumlah'].forEach(k=>{
+      if(data[k]!==undefined) data[k] = Number(data[k]) || 0;
+  });
+
+  if (state.mode === 'saku') {
+    data.Total = (Number(data.Jumlah)||0) * (Number(data.Tarif)||0);
+  }
+
+  if(state.editing && state.editing.ID) data.ID = state.editing.ID;
+  if(state.mode === 'profile' && state.currentUser && state.currentUser.ID) data.ID = state.currentUser.ID;
+
+  const isUserEdit = (state.mode === 'profile' || state.mode === 'user') && data.ID;
+  if (isUserEdit && (!data.Password || String(data.Password).trim() === '')) {
+    delete data.Password;
+  }
+
+  if (['tol','bbm','saku','makan','operasional'].includes(state.mode)) {
+    data.IDPerjalanan = state.activeTripId;
+  }
+
+  let sheetName = '';
+  if (state.mode === 'profile') sheetName = SHEET.USERS;
+  else if (state.mode === 'user') sheetName = SHEET.USERS;
+  else sheetName = { perjalanan: SHEET.PERJALANAN, tol: SHEET.TOL, bbm: SHEET.BBM, saku: SHEET.SAKU, makan: SHEET.MAKAN, operasional: SHEET.OPERASIONAL }[state.mode];
+
+  if (!sheetName) return;
+
+  const modeAtSubmit = state.mode;
+  const btn = $('#btnSubmit');
+  btn.disabled = true;
+  btn.textContent = '⏳ Menyimpan...';
+  showLoading();
+
+  try {
+    let fotoBase64 = data.Foto;
+    if (fotoBase64) {
+      let items = [];
+      try {
+        items = JSON.parse(fotoBase64);
+        if (!Array.isArray(items)) items = [fotoBase64];
+      } catch(e) {
+        items = [fotoBase64];
+      }
+
+      let finalUrls = [];
+      for (let item of items) {
+        if (item.startsWith('data:image')) {
+          btn.textContent = '⏳ Upload Foto...';
+          const upData = await api('uploadPhoto', { foto: item });
+          if(upData.ok) finalUrls.push(upData.url);
+          else throw new Error('Gagal upload foto: ' + upData.error);
+        } else if (item.startsWith('http')) {
+          finalUrls.push(item);
+        }
+      }
+      data.Foto = JSON.stringify(finalUrls);
+    }
+
+    btn.textContent = '⏳ Menyimpan Data...';
+    const res = await api('saveRecord', { sheetName, data });
+
+    if(!res.ok){ throw new Error(res.error || 'Gagal menyimpan'); }
+
+    showToast('✅ Data berhasil disimpan','success');
+
+    if (modeAtSubmit === 'profile') {
+      state.currentUser.NamaLengkap = data.NamaLengkap;
+      localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+      $('#headerUserName').textContent = state.currentUser.NamaLengkap.toUpperCase() + ' // ' + state.currentUser.Role.toUpperCase();
+    } else if (modeAtSubmit === 'perjalanan' && res.record && res.record.ID && !state.editing) {
+      state.activeTripId = res.record.ID;
+      closeModal(); loadData(true);
+      setTimeout(() => openTripDetail(state.activeTripId), 500);
+      return;
+    }
+
+    closeModal();
+    loadData(true);
+  } catch(err) {
+    showToast('Gagal menyimpan: '+err.message,'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Simpan';
+    hideLoading();
+  }
+}
+
+async function confirmDelete(sheetName, id, label){
+  const confirmed = await showConfirm('Hapus Data', `Yakin ingin menghapus ${label}? Data yang dihapus tidak dapat dikembalikan.`, '🗑️');
+  if(!confirmed) return;
+
+  showLoading();
+  try {
+    const res = await api('deleteRecord', { sheetName, id });
+
+    if(!res.ok){ throw new Error(res.error); }
+
+    showToast('🗑️ Data berhasil dihapus','warning');
+
+    if(sheetName === SHEET.PERJALANAN && state.activeTripId === id){
+      state.activeTripId = null;
+      state.activeCategory = null;
+      closeTripDetail();
+    }
+
+    loadData(true);
+  } catch(err) {
+    showToast('Gagal menghapus: '+err.message,'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+$('#fab').addEventListener('click', ()=>{
+  if (!$('#viewDashboard').classList.contains('hidden')) {
+    openFormPerjalanan();
+  } else if (state.activeCategory && !['rekap', 'lpj'].includes(state.activeCategory)) {
+    switch(state.activeCategory){
+      case 'tol': openFormTol(); break;
+      case 'bbm': openFormBbm(); break;
+      case 'saku': openFormSaku(); break;
+      case 'makan': openFormMakan(); break;
+      case 'operasional': openFormOperasional(); break;
+    }
+  }
+});
+
+checkAuth();
+</script>
+</body>
+</html>
